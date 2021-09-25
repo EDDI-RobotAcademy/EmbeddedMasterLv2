@@ -26,5 +26,11 @@
 15) git push origin main
 16) 여기서 만약 보안 문제로 토큰을 발급하라고 나온다면
     깃 계정에서 토큰 발급하여 비밀번호 대신 토큰을 넣습니다.
-17) 
+17) 우측 상단 계정 프로필 메뉴바 버튼 클릭 -> Settings ->
+    Developer settings -> Personal access tokens ->
+    우측 상단 근처의 Generate new token 클릭 ->
+    Note에는 적당한 이름, 만료일, repo, admin:repo_hook
+18) git push origin 이후 계정과 비밀번호 대신 토큰으로 대체
+19)   
+
 ```
