@@ -27,15 +27,35 @@ void push_data(stack **top, int data)
 	(*top)->link = tmp;
 }
 
+int pop_data(stack **top)
+{
+	int data;
+	stack *tmp;
+
+	if (!(*top))
+	{
+		printf("Stack is empty\n");
+		return -1;
+	}
+
+	tmp = *top;
+
+	data = tmp->data;
+	*top = tmp->link;
+
+	free(tmp);
+
+	return data;
+}
+
 void print_stack_data(stack *top)
 {
-	stack *tmp = top;
-
-	while (tmp)
+	while (top)
 	{
-		printf("data = %d\n", tmp->data);
-		tmp = tmp->link;
+		printf("data = %d\n", top->data);
+		top = top->link;
 	}
+	printf("\n");
 }
 
 int main(void)
@@ -50,6 +70,12 @@ int main(void)
 	}
 
 	print_stack_data(top);
+
+	for (i = 0; i < 8; i++)
+	{
+		printf("pop = %d\n", pop_data(&top));
+		print_stack_data(top);
+	}
 
 	return 0;
 }
