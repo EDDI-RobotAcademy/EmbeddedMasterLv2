@@ -8,6 +8,16 @@ struct _queue
 	struct _queue *link;
 };
 
+queue *create_queue_node(void)
+{
+	queue *tmp;
+
+	tmp = (queue *)malloc(sizeof(queue));
+	tmp->link = 0;
+
+	return tmp;
+}
+
 void enqueue_data(queue **head, int data)
 {
 	if (!(*head))
@@ -18,13 +28,14 @@ void enqueue_data(queue **head, int data)
 	}
 
 	// 요기서 뭘 해야할까요 ?
+	enqueue_data(&(*head)->link, data);
 }
 
 void print_queue(queue *head)
 {
 	while (head)
 	{
-		print("queue head = %d\n", head->data);
+		printf("queue head = %d\n", head->data);
 		head = head->link;
 	}
 }
