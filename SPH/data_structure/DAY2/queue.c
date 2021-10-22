@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define Guide_Code 1
+//#define Guide_Code 1
 
 typedef struct _queue queue;
 struct _queue
@@ -33,29 +33,22 @@ void enqueue_data(queue **head, int data)
 	if(!(*head))
 	{
 		*head = create_queue_node();
-		*head->data = data;
+		(*head)->data = data;
 		return;
 	}
 	else
 	{
-		queue *tmp = *head;
-		while(1)
+		queue *backup = *head;
+		queue *new = NULL;
+
+		while(backup->link)
 		{
-			if(!((*head)->link))
-			{
-				tmp = create_queue_node();
-				tmp->data = data;
-				(*head)->link = tmp;
-				return;
-			}
-			else
-			{
-				if(!(tmp->link)) return;
-				tmp = create_queue_node();
-				tmp->data = data;
-				tmp = tmp->link;
-			}
+			backup = backup->link;
 		}
+		new = create_queue_node();
+		new->data = data;
+		backup->link = new;
+		return;
 	}
 #endif
 }
@@ -64,24 +57,11 @@ int dequeue_data(queue **head)
 {
 	int data;
 	queue *tmp = *head;
-#if Guide_Code
+
 	data = (*head)->data;
 	(*head) = tmp->link;
 	free(tmp);
 	return data;
-#else
-	if(!tmp->link)
-	{
-		data = tmp->data;
-		(*head) = tmp->link;
-		free(tmp);
-		return data;
-	}
-	else
-	{
-		data = dequeue_data(&(*head)->link);
-	}
-#endif
 }
 
 void enqueue_data_idx(queue **head, int data, int idx)
@@ -191,17 +171,15 @@ int main(void)
 	print_queue(head);
 
 	printf("Start Dequeue!\n");
-	while(head)
+	for (i = 0; i < 5; i++)
 	{
-		if(dequeue_data(&head))
-		{
-			printf("Dequeue data = %d\n", dequeue_data(&head));
-			print_queue(head);
-		}
-		else
+		if(!head)
 		{
 			printf("Queue is Empty\n");
+			break;
 		}
+		printf("Dequeue data = %d\n", dequeue_data(&head));
+		print_queue(head);
 	}
 #endif
 	return 0;
