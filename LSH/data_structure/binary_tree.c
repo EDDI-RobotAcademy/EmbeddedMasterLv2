@@ -31,12 +31,33 @@ void insert_tree_data(tree **root, int data)
 
 	// 언제 왼쪽에 넣어야 하는지
 	// 언제 오른쪽에 넣어야 하는지를 판정해야함
-	// insert_tree_data(&(*root)->link, data);
+	if ((*root)->data > data)
+	{
+		insert_tree_data(&(*root)->left, data);
+	}
+	else if ((*root)->data < data)
+	{
+		insert_tree_data(&(*root)->right, data);
+	}
+}
+
+void nr_insert_tree_data(tree **root, int data)
+{
+	while(*root)
+	{
+		if((*root)->data > data)
+			root = &(*root)->left;
+		else if((*root)->data < data)
+			root = &(*root)->right;
+	}
+
+	*root = create_tree_node();
+	(*root)->data = data;
 }
 
 void print_tree(tree *root)
 {
-	while (root)
+	if (root)
 	{
 		printf("tree root = %d\n", root->data);
 		print_tree(root->left);
@@ -44,17 +65,74 @@ void print_tree(tree *root)
 	}
 }
 
+tree **find_tree_data(tree **root, int data)
+{
+	while (*root)
+	{
+		if ((*root)->data > data)
+			root = &(*root)->left;
+		else if ((*root)->data < data)
+			root = &(*root)->right;
+		else
+			return root;
+	}
+
+	return NULL;
+}
+
+void delete_tree_data(tree **root, int data)
+{
+	tree *tmp;
+	root = find_tree_data(root, data);
+
+	tmp = *root;
+
+	if (!(*root)->left)
+	{
+		*root = (*root)->right;
+	}
+	else if (!(*root)->right)
+	{
+		*root = (*root)->left;
+	}
+	else
+	{
+		int max = proc_left_max(root);
+		//int min = proc_right_min(root);
+	}
+
+	free(tmp);
+}
+
 int main(void)
 {
 	int i;
 	tree *root = NULL;
+	tree **tmp = NULL;
 	int data[] = { 34, 17, 55, 10, 13, 12, 53, 57 };
 
 	for (i = 0; i < 8; i++)
 	{
-		insert_tree_data(&root, data[i]);
+		//insert_tree_data(&root, data[i]);
+		nr_insert_tree_data(&root, data[i]);
 	}
 
+	print_tree(root);
+
+	if (tmp = find_tree_data(&root, 13))
+		printf("tmp->data = %d\n", (*tmp)->data);
+
+	if (tmp = find_tree_data(&root, 77))
+		printf("tmp->data = %d\n", (*tmp)->data);
+	else
+		printf("데이터를 찾을 수 없습니다!\n");
+
+	printf("12 삭제\n");
+	delete_tree_data(&root, 12);
+	print_tree(root);
+
+	printf("10 삭제\n");
+	delete_tree_data(&root, 10);
 	print_tree(root);
 
 	return 0;
