@@ -1,0 +1,146 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+typedef struct _queue queue;
+struct _queue
+{
+	int data;
+	struct _queue *link;
+};
+
+static int queue_item_cnt = 0;
+
+queue *create_queue_node(void)
+{
+        queue *tmp;
+
+        tmp = (queue *)malloc(sizeof(queue));
+        tmp->link = NULL;
+
+        return tmp;
+}
+
+void enqueue_data(queue **head, int data)
+{
+	queue *node;
+	
+	if (!(*head))
+	{
+		*head = create_queue_node();
+		(*head)->data = data;
+		return;
+	}
+
+	node = (*head);
+
+	while(node->link != NULL)
+	{	
+		node = node->link;
+	}
+
+	node->link = create_queue_node();
+	node->link->data = data;
+
+	queue_item_cnt++;
+}
+
+int dequeue_data(queue **head)
+{
+	int data;
+	queue *tmp;
+
+	if ((*head) == NULL)
+	{
+		printf("queue is empty \n");
+		return -1;
+	}
+	
+	tmp = *head;
+	data = (*head)->data;
+	*head = (*head)->link;
+
+	free(tmp);
+
+	queue_item_cnt--;
+
+	return data;
+}
+
+void enqueue_data_idx(queue **head, int data, int idx)
+{
+	int cnt = 0;
+	queue *node, *pre_node;
+	queue *new_node;
+
+	if (idx > queue_item_cnt)
+	{
+		printf("Can't enqueue data this index \n");
+		return;
+	}	
+
+	node = *head;
+
+	while(cnt != idx)
+	{
+		pre_node = node;
+		node = node->link;
+		cnt++;
+	}
+
+	new_node = create_queue_node();
+	new_node->data = data;
+
+	pre_node->link = new_node;
+	new_node->link = node;
+
+	queue_item_cnt++;
+
+}
+
+void print_queue(queue *head)
+{
+	while (head)
+	{		
+		printf("queue head = %d\n", head->data);
+		head = head->link;
+	}
+}
+
+int main(void)
+{
+	int i;
+	queue *head = NULL;
+	int data[] = { 10, 20, 30, 40 };
+
+	for (i = 0; i < 4; i++)
+	{
+		enqueue_data(&head, data[i]);
+	}
+
+	print_queue(head);
+/*
+
+	for (i = 0; i < 5; i++)
+	{
+		dequeue_data(&head);
+	}
+
+	for (i = 0; i < 4; i++)
+	{
+		enqueue_data(&head, data[i]);
+	}
+*/
+	// 특정 인덱스에 값 넣기
+//	enqueue_data_idx(&head, 33, 2);
+
+
+#if 0
+	// 특정 인덱스 값 빼기
+	dequeue_data_idx(&head, 0);
+
+	print_queue(head);
+#endif
+
+	return 0;
+}
+
