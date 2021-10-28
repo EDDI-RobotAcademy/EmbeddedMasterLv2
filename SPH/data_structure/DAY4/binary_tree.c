@@ -2,7 +2,6 @@
 #include <stdio.h>
 
 #define Guide_Code 1
-//#define tow_child_max 2
 
 typedef struct _tree tree;
 struct _tree
@@ -82,98 +81,42 @@ tree **find_tree_data(tree **root, int data)
 #endif
 }
 
-tree **find_child_node(tree **root)
-{
-	if (!(*root)->left)//우측에만 자식노드가 있는 경우
-	{
-		return &(*root)->right;
-	}
-	else if (!(*root)->right)//좌측에만 자식노드가 있는 경우
-	{
-		return &(*root)->left;
-	}
-	else //자식노드가 없는 경우 & 자식노드가 둘 다 있는 경우
-	{
-		return root;
-	}
-}
-
-int proc_left_max(tree **root)
-{
-	int max;
-	tree *tmp = (*root)->left; //삭제하려는 노드의 왼쪽 노드를 백업
-
-	//삭제하려는 노드의 왼쪽노드에 오른쪽 값이 있다면 
-	//오른쪽 노드에서 최대값을 찾는다.
-	if(tmp->right) 
-	{
-		while(tmp)
-		{
-			max = tmp->data;
-			tmp = tmp->right;
-		}
-	}
-	else
-	{
-		max = tmp->data;
-	}
-
-	printf("max data = %d\n", max);
-
-	return max;
-}
-
-int proc_right_min(tree **root)
-{
-	int min;
-	tree *tmp = (*root)->right;
-
-	if(tmp->left)
-	{
-		while(tmp)
-		{
-			min = tmp->data;
-			tmp = tmp->left;
-		}
-	}
-	else
-	{
-		min = tmp->data;
-	}
-
-	printf("min data = %d\n", min);
-
-	return min;
-}
-
 void delete_tree_node(tree **root, int data)
 {
 #if Guide_Code
-	tree *tmp;
+	tree *tmp; 
 	root = find_tree_data(root, data);
 
 	tmp = *root;
 
-	if (!(*root)->left)
-	{
-		*root = *find_child_node(root);
-	}
-	else if (!(*root)->right)
-	{
-		*root = *find_child_node(root);
-	}
-	else
-	{
-		int max = proc_left_max(root);
-		delete_tree_node(root, max);
-		(*root)->data = max;
+	printf("Deleted tree data = %d\n", (*root)->data);
+	*root = (!(*root)->left) ? (*root)->right : (*root)->left;
 
-		/*int min = proc_right_min(root);
-		delete_tree_node(root, min);
-		(*root)->data = min;*/
-		return;
-	}
 	free(tmp);
+#else
+	if((*root)->data < data) //현재 노드의 데이터보다 찾고자하는 데이터가 작은 경우
+	{
+		delete_tree_node(&(*root)->right, data);
+	}
+	else if((*root)->data > data) //현재 노드의 데이터가 찾고자하는 데이터보다 큰 경우 
+	{
+		delete_tree_node(&(*root)->left, data);
+	}
+	else //현재 노드의 데이터와 찾고자하는 데이터가 같은경우
+	{
+		//노드 삭제
+		tree *tmp = *root;
+		printf("Deleted root data = %d\n", (*root)->data);
+		//*root = (!(*root)->left) ? (*root)->right : (*root)->left;
+		if(!(*root)->left)
+			*root = (*root)->right;
+		else if(!(*root)->right)
+			*root = (*root)->left;
+		else
+		{
+		}
+		free(tmp);
+	}
 #endif
 }
 
@@ -210,11 +153,9 @@ int main(void)
 		printf("데이터를 찾을 수 없습니다.\n");
 
 	printf("\nDelete Tree Node\n");
-	//delete_tree_node(&root, 13);
-	//delete_tree_node(&root, 10);
+	delete_tree_node(&root, 13);
+	delete_tree_node(&root, 10);
 	//delete_tree_node(&root, 55);
-	//delete_tree_node(&root, 17);
-	delete_tree_node(&root, 34);
 
 	print_tree(root);
 	return 0;
