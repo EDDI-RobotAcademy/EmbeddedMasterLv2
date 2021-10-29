@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define Guide_Code 1
-//#define tow_child_max 2
-
 typedef struct _tree tree;
 struct _tree
 {
@@ -146,6 +143,49 @@ int proc_right_min(tree **root)
 	return min;
 }
 
+int calc_left_node_height(tree **root)
+{
+	int left_height = 0;
+	tree *tmp = (*root)->left;
+
+	//노드의 자식노드가 1개라도 있는 경우 높이 카운트
+	while(tmp)
+	{
+		left_height++;
+		printf("data = %d\n", tmp->data);
+		tmp = (tmp->left) ? tmp->left : tmp->right;
+	}
+
+	return left_height;
+}
+
+int calc_right_node_height(tree **root)
+{
+	int right_height = 0;
+	tree *tmp = (*root)->right;
+
+	//노드의 자식노드가 1개라도 있는 경우 높이 카운트
+	while(tmp)
+	{
+		right_height++;
+		printf("data = %d\n", tmp->data);
+		tmp = (tmp->right) ? tmp->right : tmp -> left;
+	}
+	return right_height;
+}
+
+void balance_tree_node(tree **root)
+{
+	int left_height, right_height;
+	tree *tmp = *root;
+
+	left_height = calc_left_node_height(root);
+	//right_height = calc_right_node_height(root);
+
+	printf("left node height = %d\n", left_height);
+	//printf("right node height = %d\n", right_height);
+}
+
 void delete_tree_node(tree **root, int data)
 {
 #if Guide_Code
@@ -192,30 +232,17 @@ int main(void)
 	int i;
 	tree *root = NULL;
 	tree **tmp = NULL;
-	int data[] = { 34, 17, 55, 10, 13, 12, 53, 57 };
+	int data[] = {20, 15, 3, 12, 5, 11, 6, 40, 25, 18};
 
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < 10; i++)
 	{
 		insert_tree_data(&root, data[i]);
 	}
 
 	print_tree(root);
 
-	printf("\nFind Tree Data\n");
-	if(tmp = find_tree_data(&root, 13)) 
-		printf("tmp->data = %d\n", (*tmp)->data);
-	else if(tmp = find_tree_data(&root, 77))
-		printf("tmp->data = %d\n", (*tmp)->data);
-	else
-		printf("데이터를 찾을 수 없습니다.\n");
+	printf("\nCalculate node height\n");
+	balance_tree_node(&root);
 
-	printf("\nDelete Tree Node\n");
-	//delete_tree_node(&root, 13);
-	//delete_tree_node(&root, 10);
-	//delete_tree_node(&root, 55);
-	//delete_tree_node(&root, 17);
-	delete_tree_node(&root, 34);
-
-	print_tree(root);
 	return 0;
 }
