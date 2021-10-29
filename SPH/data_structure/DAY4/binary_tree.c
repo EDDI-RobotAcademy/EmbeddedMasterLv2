@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define Guide_Code 1
-
 typedef struct _tree tree;
 struct _tree
 {

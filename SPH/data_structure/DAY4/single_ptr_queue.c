@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-//#define Guide_Code 1
+#define Guide_Code 1
 
 typedef struct _queue queue;
 struct _queue
@@ -18,17 +18,20 @@ queue *create_queue_node()
 	return tmp;
 }
 
-void enqueue_data(queue **head, int data)
+queue *enqueue_data(queue **head, int data)
 {
+	queue *tmp = NULL;
 #if Guide_Code
 	if (!(*head))
 	{
 		*head = create_queue_node();
 		(*head)->data = data;
-		return;
+		tmp = *head;
+		return tmp;
 	}
 	// 요기서 뭘 해야할까요 ?
-	enqueue_data(&(*head)->link, data);
+	tmp = enqueue_data(&(*head)->link, data);
+	return tmp;
 #else
 	if(!(*head))
 	{
@@ -125,7 +128,7 @@ int main(void)
 #if Guide_Code
 	for (i = 0; i < 4; i++)
 	{
-		enqueue_data(&head, data[i]);
+		head = enqueue_data(&head, data[i]);
 	}
 	print_queue(head);
 
