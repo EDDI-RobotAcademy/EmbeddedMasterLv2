@@ -1,5 +1,7 @@
 # Data Structures Homework
 
+## First
+
 ```make
 1. Stack의 push, pop에 대한 동작 과정 살펴보기
 2. Stack 코드를 어떠한 참고도 없이 다시 처음부터 만들어봅니다.
@@ -9,4 +11,22 @@
 4. Queue의 경우엔 원하는 인덱스에 값을 삽입할 수 있습니다.
 5. Queue는 원하는 위치 혹은 값을 삭제할 수 있습니다.
 6. Stack과 같이 순차적인 삽입과 순차적인 삭제 또한 가능해야 합니다.
+```
+
+## Second
+
+```make
+1. Queue의 enqueue, dequeue 부분 정리
+2. dequeue_idx 파트 구현 완료
+3. Tree의 입력
+4. Tree의 삭제
+5. 특정 노드 찾기
+```
+
+## Third
+
+```make
+1. Stack, Queue, Tree Single Pointer Implementation
+2. Tree Delete Implementation
+3. AVL Tree Implementation Strategy
 ```
