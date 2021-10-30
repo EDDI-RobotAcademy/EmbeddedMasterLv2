@@ -1,0 +1,1351 @@
+(gdb) l mult
+1	# include <stdio.h>
+2	
+3	int mult(int n1, int n2)
+4	{
+5		return n1 * n2;
+6	}
+7	
+8	int main(void)
+9	{
+10		int num = 3, num2 = 2;
+11		int res;
+12	
+13		res = mult(num, num2);
+14		printf("res = %d\n", res);
+15	
+16		return 0;
+17	}
+(gdb) b main
+Breakpoint 1 at 0x555555555160: file late.c, line 9.
+(gdb) r
+Starting program: /home/cory/proj/EmbeddedMasterLv2/KJH/a.out 
+
+Breakpoint 1, main () at late.c:9
+9	{
+(gdb) disas
+Dump of assembler code for function main:
+=> 0x0000555555555160 <+0>:	endbr64 
+   0x0000555555555164 <+4>:	push   %rbp
+   0x0000555555555165 <+5>:	mov    %rsp,%rbp
+   0x0000555555555168 <+8>:	sub    $0x10,%rsp
+   0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+   0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+   0x0000555555555180 <+32>:	mov    %edx,%esi
+   0x0000555555555182 <+34>:	mov    %eax,%edi
+   0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+   0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+   0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+   0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+   0x0000555555555198 <+56>:	mov    $0x0,%eax
+   0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x555555555160      93824992235872
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x7fffffffe068      140737488347240
+rsi            0x7fffffffe058      140737488347224
+rdi            0x1                 1
+rbp            0x0                 0x0
+rsp            0x7fffffffdf68      0x7fffffffdf68
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555160      0x555555555160 <main>
+eflags         0x246               [ PF ZF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) Quit
+(gdb) x $rsp
+0x7fffffffdf68:	0xf7deb0b3
+(gdb) si
+0x0000555555555164	9	{
+(gdb) disas
+Dump of assembler code for function main:
+   0x0000555555555160 <+0>:	endbr64 
+=> 0x0000555555555164 <+4>:	push   %rbp
+   0x0000555555555165 <+5>:	mov    %rsp,%rbp
+   0x0000555555555168 <+8>:	sub    $0x10,%rsp
+   0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+   0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+   0x0000555555555180 <+32>:	mov    %edx,%esi
+   0x0000555555555182 <+34>:	mov    %eax,%edi
+   0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+   0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+   0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+   0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+   0x0000555555555198 <+56>:	mov    $0x0,%eax
+   0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) x $rsp
+0x7fffffffdf68:	0xf7deb0b3
+(gdb) si
+0x0000555555555165	9	{
+(gdb) disas
+Dump of assembler code for function main:
+   0x0000555555555160 <+0>:	endbr64 
+   0x0000555555555164 <+4>:	push   %rbp
+=> 0x0000555555555165 <+5>:	mov    %rsp,%rbp
+   0x0000555555555168 <+8>:	sub    $0x10,%rsp
+   0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+   0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+   0x0000555555555180 <+32>:	mov    %edx,%esi
+   0x0000555555555182 <+34>:	mov    %eax,%edi
+   0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+   0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+   0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+   0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+   0x0000555555555198 <+56>:	mov    $0x0,%eax
+   0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x555555555160      93824992235872
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x7fffffffe068      140737488347240
+rsi            0x7fffffffe058      140737488347224
+rdi            0x1                 1
+rbp            0x0                 0x0
+rsp            0x7fffffffdf60      0x7fffffffdf60
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555165      0x555555555165 <main+5>
+eflags         0x246               [ PF ZF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf60:	0x00000000
+(gdb) x $rbp
+0x0:	Cannot access memory at address 0x0
+(gdb) si
+0x0000555555555168	9	{
+(gdb) disas
+Dump of assembler code for function main:
+   0x0000555555555160 <+0>:	endbr64 
+   0x0000555555555164 <+4>:	push   %rbp
+   0x0000555555555165 <+5>:	mov    %rsp,%rbp
+=> 0x0000555555555168 <+8>:	sub    $0x10,%rsp
+   0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+   0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+   0x0000555555555180 <+32>:	mov    %edx,%esi
+   0x0000555555555182 <+34>:	mov    %eax,%edi
+   0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+   0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+   0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+   0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+   0x0000555555555198 <+56>:	mov    $0x0,%eax
+   0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x555555555160      93824992235872
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x7fffffffe068      140737488347240
+rsi            0x7fffffffe058      140737488347224
+rdi            0x1                 1
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf60      0x7fffffffdf60
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555168      0x555555555168 <main+8>
+eflags         0x246               [ PF ZF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf60:	0x00000000
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+10		int num = 3, num2 = 2;
+(gdb) disas
+Dump of assembler code for function main:
+   0x0000555555555160 <+0>:	endbr64 
+   0x0000555555555164 <+4>:	push   %rbp
+   0x0000555555555165 <+5>:	mov    %rsp,%rbp
+   0x0000555555555168 <+8>:	sub    $0x10,%rsp
+=> 0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+   0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+   0x0000555555555180 <+32>:	mov    %edx,%esi
+   0x0000555555555182 <+34>:	mov    %eax,%edi
+   0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+   0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+   0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+   0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+   0x0000555555555198 <+56>:	mov    $0x0,%eax
+   0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x555555555160      93824992235872
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x7fffffffe068      140737488347240
+rsi            0x7fffffffe058      140737488347224
+rdi            0x1                 1
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf50      0x7fffffffdf50
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x55555555516c      0x55555555516c <main+12>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf50:	0xffffe050
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+10		int num = 3, num2 = 2;
+(gdb) si
+13		res = mult(num, num2);
+(gdb) info register
+rax            0x555555555160      93824992235872
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x7fffffffe068      140737488347240
+rsi            0x7fffffffe058      140737488347224
+rdi            0x1                 1
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf50      0x7fffffffdf50
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x55555555517a      0x55555555517a <main+26>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf50:	0xffffe050
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+0x000055555555517d	13		res = mult(num, num2);
+(gdb) disas
+Dump of assembler code for function main:
+   0x0000555555555160 <+0>:	endbr64 
+   0x0000555555555164 <+4>:	push   %rbp
+   0x0000555555555165 <+5>:	mov    %rsp,%rbp
+   0x0000555555555168 <+8>:	sub    $0x10,%rsp
+   0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+=> 0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+   0x0000555555555180 <+32>:	mov    %edx,%esi
+   0x0000555555555182 <+34>:	mov    %eax,%edi
+   0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+   0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+   0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+   0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+   0x0000555555555198 <+56>:	mov    $0x0,%eax
+   0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x555555555160      93824992235872
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x7fffffffe058      140737488347224
+rdi            0x1                 1
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf50      0x7fffffffdf50
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x55555555517d      0x55555555517d <main+29>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf50:	0xffffe050
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+0x0000555555555180	13		res = mult(num, num2);
+(gdb) disas
+Dump of assembler code for function main:
+   0x0000555555555160 <+0>:	endbr64 
+   0x0000555555555164 <+4>:	push   %rbp
+   0x0000555555555165 <+5>:	mov    %rsp,%rbp
+   0x0000555555555168 <+8>:	sub    $0x10,%rsp
+   0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+   0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+=> 0x0000555555555180 <+32>:	mov    %edx,%esi
+   0x0000555555555182 <+34>:	mov    %eax,%edi
+   0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+   0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+   0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+   0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+   0x0000555555555198 <+56>:	mov    $0x0,%eax
+   0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x3                 3
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x7fffffffe058      140737488347224
+rdi            0x1                 1
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf50      0x7fffffffdf50
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555180      0x555555555180 <main+32>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf50:	0xffffe050
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+0x0000555555555182	13		res = mult(num, num2);
+(gdb) disas
+Dump of assembler code for function main:
+   0x0000555555555160 <+0>:	endbr64 
+   0x0000555555555164 <+4>:	push   %rbp
+   0x0000555555555165 <+5>:	mov    %rsp,%rbp
+   0x0000555555555168 <+8>:	sub    $0x10,%rsp
+   0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+   0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+   0x0000555555555180 <+32>:	mov    %edx,%esi
+=> 0x0000555555555182 <+34>:	mov    %eax,%edi
+   0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+   0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+   0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+   0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+   0x0000555555555198 <+56>:	mov    $0x0,%eax
+   0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x3                 3
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x1                 1
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf50      0x7fffffffdf50
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555182      0x555555555182 <main+34>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf50:	0xffffe050
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+0x0000555555555184	13		res = mult(num, num2);
+(gdb) disas
+Dump of assembler code for function main:
+   0x0000555555555160 <+0>:	endbr64 
+   0x0000555555555164 <+4>:	push   %rbp
+   0x0000555555555165 <+5>:	mov    %rsp,%rbp
+   0x0000555555555168 <+8>:	sub    $0x10,%rsp
+   0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+   0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+   0x0000555555555180 <+32>:	mov    %edx,%esi
+   0x0000555555555182 <+34>:	mov    %eax,%edi
+=> 0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+   0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+   0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+   0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+   0x0000555555555198 <+56>:	mov    $0x0,%eax
+   0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x3                 3
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x3                 3
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf50      0x7fffffffdf50
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555184      0x555555555184 <main+36>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf50:	0xffffe050
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+mult (n1=21845, n2=1431654832) at late.c:4
+4	{
+(gdb) disas
+Dump of assembler code for function mult:
+=> 0x0000555555555149 <+0>:	endbr64 
+   0x000055555555514d <+4>:	push   %rbp
+   0x000055555555514e <+5>:	mov    %rsp,%rbp
+   0x0000555555555151 <+8>:	mov    %edi,-0x4(%rbp)
+   0x0000555555555154 <+11>:	mov    %esi,-0x8(%rbp)
+   0x0000555555555157 <+14>:	mov    -0x4(%rbp),%eax
+   0x000055555555515a <+17>:	imul   -0x8(%rbp),%eax
+   0x000055555555515e <+21>:	pop    %rbp
+   0x000055555555515f <+22>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x3                 3
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x3                 3
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf48      0x7fffffffdf48
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555149      0x555555555149 <mult>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf48:	0x55555189
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) is
+Undefined command: "is".  Try "help".
+(gdb) si
+0x000055555555514d	4	{
+(gdb) disas
+Dump of assembler code for function mult:
+   0x0000555555555149 <+0>:	endbr64 
+=> 0x000055555555514d <+4>:	push   %rbp
+   0x000055555555514e <+5>:	mov    %rsp,%rbp
+   0x0000555555555151 <+8>:	mov    %edi,-0x4(%rbp)
+   0x0000555555555154 <+11>:	mov    %esi,-0x8(%rbp)
+   0x0000555555555157 <+14>:	mov    -0x4(%rbp),%eax
+   0x000055555555515a <+17>:	imul   -0x8(%rbp),%eax
+   0x000055555555515e <+21>:	pop    %rbp
+   0x000055555555515f <+22>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x3                 3
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x3                 3
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf48      0x7fffffffdf48
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x55555555514d      0x55555555514d <mult+4>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf48:	0x55555189
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+0x000055555555514e	4	{
+(gdb) disas
+Dump of assembler code for function mult:
+   0x0000555555555149 <+0>:	endbr64 
+   0x000055555555514d <+4>:	push   %rbp
+=> 0x000055555555514e <+5>:	mov    %rsp,%rbp
+   0x0000555555555151 <+8>:	mov    %edi,-0x4(%rbp)
+   0x0000555555555154 <+11>:	mov    %esi,-0x8(%rbp)
+   0x0000555555555157 <+14>:	mov    -0x4(%rbp),%eax
+   0x000055555555515a <+17>:	imul   -0x8(%rbp),%eax
+   0x000055555555515e <+21>:	pop    %rbp
+   0x000055555555515f <+22>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x3                 3
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x3                 3
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf40      0x7fffffffdf40
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x55555555514e      0x55555555514e <mult+5>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf40:	0xffffdf60
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+0x0000555555555151	4	{
+(gdb) disas
+Dump of assembler code for function mult:
+   0x0000555555555149 <+0>:	endbr64 
+   0x000055555555514d <+4>:	push   %rbp
+   0x000055555555514e <+5>:	mov    %rsp,%rbp
+=> 0x0000555555555151 <+8>:	mov    %edi,-0x4(%rbp)
+   0x0000555555555154 <+11>:	mov    %esi,-0x8(%rbp)
+   0x0000555555555157 <+14>:	mov    -0x4(%rbp),%eax
+   0x000055555555515a <+17>:	imul   -0x8(%rbp),%eax
+   0x000055555555515e <+21>:	pop    %rbp
+   0x000055555555515f <+22>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x3                 3
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x3                 3
+rbp            0x7fffffffdf40      0x7fffffffdf40
+rsp            0x7fffffffdf40      0x7fffffffdf40
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555151      0x555555555151 <mult+8>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf40:	0xffffdf60
+(gdb) x $rbp
+0x7fffffffdf40:	0xffffdf60
+(gdb) si
+0x0000555555555154	4	{
+(gdb) disas
+Dump of assembler code for function mult:
+   0x0000555555555149 <+0>:	endbr64 
+   0x000055555555514d <+4>:	push   %rbp
+   0x000055555555514e <+5>:	mov    %rsp,%rbp
+   0x0000555555555151 <+8>:	mov    %edi,-0x4(%rbp)
+=> 0x0000555555555154 <+11>:	mov    %esi,-0x8(%rbp)
+   0x0000555555555157 <+14>:	mov    -0x4(%rbp),%eax
+   0x000055555555515a <+17>:	imul   -0x8(%rbp),%eax
+   0x000055555555515e <+21>:	pop    %rbp
+   0x000055555555515f <+22>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x3                 3
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x3                 3
+rbp            0x7fffffffdf40      0x7fffffffdf40
+rsp            0x7fffffffdf40      0x7fffffffdf40
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555154      0x555555555154 <mult+11>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf40:	0xffffdf60
+(gdb) x $rbp
+0x7fffffffdf40:	0xffffdf60
+(gdb) si
+5		return n1 * n2;
+(gdb) disas
+Dump of assembler code for function mult:
+   0x0000555555555149 <+0>:	endbr64 
+   0x000055555555514d <+4>:	push   %rbp
+   0x000055555555514e <+5>:	mov    %rsp,%rbp
+   0x0000555555555151 <+8>:	mov    %edi,-0x4(%rbp)
+   0x0000555555555154 <+11>:	mov    %esi,-0x8(%rbp)
+=> 0x0000555555555157 <+14>:	mov    -0x4(%rbp),%eax
+   0x000055555555515a <+17>:	imul   -0x8(%rbp),%eax
+   0x000055555555515e <+21>:	pop    %rbp
+   0x000055555555515f <+22>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x3                 3
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x3                 3
+rbp            0x7fffffffdf40      0x7fffffffdf40
+rsp            0x7fffffffdf40      0x7fffffffdf40
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555157      0x555555555157 <mult+14>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf40:	0xffffdf60
+(gdb) x $rbp
+0x7fffffffdf40:	0xffffdf60
+(gdb) si
+0x000055555555515a	5		return n1 * n2;
+(gdb) disas
+Dump of assembler code for function mult:
+   0x0000555555555149 <+0>:	endbr64 
+   0x000055555555514d <+4>:	push   %rbp
+   0x000055555555514e <+5>:	mov    %rsp,%rbp
+   0x0000555555555151 <+8>:	mov    %edi,-0x4(%rbp)
+   0x0000555555555154 <+11>:	mov    %esi,-0x8(%rbp)
+   0x0000555555555157 <+14>:	mov    -0x4(%rbp),%eax
+=> 0x000055555555515a <+17>:	imul   -0x8(%rbp),%eax
+   0x000055555555515e <+21>:	pop    %rbp
+   0x000055555555515f <+22>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x3                 3
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x3                 3
+rbp            0x7fffffffdf40      0x7fffffffdf40
+rsp            0x7fffffffdf40      0x7fffffffdf40
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x55555555515a      0x55555555515a <mult+17>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf40:	0xffffdf60
+(gdb) x $rbp
+0x7fffffffdf40:	0xffffdf60
+(gdb) si
+6	}
+(gdb) disas
+Dump of assembler code for function mult:
+   0x0000555555555149 <+0>:	endbr64 
+   0x000055555555514d <+4>:	push   %rbp
+   0x000055555555514e <+5>:	mov    %rsp,%rbp
+   0x0000555555555151 <+8>:	mov    %edi,-0x4(%rbp)
+   0x0000555555555154 <+11>:	mov    %esi,-0x8(%rbp)
+   0x0000555555555157 <+14>:	mov    -0x4(%rbp),%eax
+   0x000055555555515a <+17>:	imul   -0x8(%rbp),%eax
+=> 0x000055555555515e <+21>:	pop    %rbp
+   0x000055555555515f <+22>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x6                 6
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x3                 3
+rbp            0x7fffffffdf40      0x7fffffffdf40
+rsp            0x7fffffffdf40      0x7fffffffdf40
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x55555555515e      0x55555555515e <mult+21>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf40:	0xffffdf60
+(gdb) x $rbp
+0x7fffffffdf40:	0xffffdf60
+(gdb) is
+Undefined command: "is".  Try "help".
+(gdb) si
+0x000055555555515f	6	}
+(gdb) disas
+Dump of assembler code for function mult:
+   0x0000555555555149 <+0>:	endbr64 
+   0x000055555555514d <+4>:	push   %rbp
+   0x000055555555514e <+5>:	mov    %rsp,%rbp
+   0x0000555555555151 <+8>:	mov    %edi,-0x4(%rbp)
+   0x0000555555555154 <+11>:	mov    %esi,-0x8(%rbp)
+   0x0000555555555157 <+14>:	mov    -0x4(%rbp),%eax
+   0x000055555555515a <+17>:	imul   -0x8(%rbp),%eax
+   0x000055555555515e <+21>:	pop    %rbp
+=> 0x000055555555515f <+22>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x6                 6
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x3                 3
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf48      0x7fffffffdf48
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x55555555515f      0x55555555515f <mult+22>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf48:	0x55555189
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+0x0000555555555189 in main () at late.c:13
+13		res = mult(num, num2);
+(gdb) disas
+Dump of assembler code for function main:
+   0x0000555555555160 <+0>:	endbr64 
+   0x0000555555555164 <+4>:	push   %rbp
+   0x0000555555555165 <+5>:	mov    %rsp,%rbp
+   0x0000555555555168 <+8>:	sub    $0x10,%rsp
+   0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+   0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+   0x0000555555555180 <+32>:	mov    %edx,%esi
+   0x0000555555555182 <+34>:	mov    %eax,%edi
+   0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+=> 0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+   0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+   0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+   0x0000555555555198 <+56>:	mov    $0x0,%eax
+   0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x6                 6
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x3                 3
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf50      0x7fffffffdf50
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555189      0x555555555189 <main+41>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf50:	0xffffe050
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+14		printf("res = %d\n", res);
+(gdb) disas
+Dump of assembler code for function main:
+   0x0000555555555160 <+0>:	endbr64 
+   0x0000555555555164 <+4>:	push   %rbp
+   0x0000555555555165 <+5>:	mov    %rsp,%rbp
+   0x0000555555555168 <+8>:	sub    $0x10,%rsp
+   0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+   0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+   0x0000555555555180 <+32>:	mov    %edx,%esi
+   0x0000555555555182 <+34>:	mov    %eax,%edi
+   0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+   0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+=> 0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+   0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+   0x0000555555555198 <+56>:	mov    $0x0,%eax
+   0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) info regitser
+Undefined info command: "regitser".  Try "help info".
+(gdb) info register
+rax            0x6                 6
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x3                 3
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf50      0x7fffffffdf50
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x55555555518c      0x55555555518c <main+44>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf50:	0xffffe050
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+0x000055555555518f	14		printf("res = %d\n", res);
+(gdb) info register
+rax            0x6                 6
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x2                 2
+rdi            0x3                 3
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf50      0x7fffffffdf50
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x55555555518f      0x55555555518f <main+47>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf50:	0xffffe050
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+0x0000555555555191	14		printf("res = %d\n", res);
+(gdb) disas
+Dump of assembler code for function main:
+   0x0000555555555160 <+0>:	endbr64 
+   0x0000555555555164 <+4>:	push   %rbp
+   0x0000555555555165 <+5>:	mov    %rsp,%rbp
+   0x0000555555555168 <+8>:	sub    $0x10,%rsp
+   0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+   0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+   0x0000555555555180 <+32>:	mov    %edx,%esi
+   0x0000555555555182 <+34>:	mov    %eax,%edi
+   0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+   0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+   0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+=> 0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+   0x0000555555555198 <+56>:	mov    $0x0,%eax
+   0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x6                 6
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x6                 6
+rdi            0x3                 3
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf50      0x7fffffffdf50
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555191      0x555555555191 <main+49>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf50:	0xffffe050
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+0x0000555555555198	14		printf("res = %d\n", res);
+(gdb) disas
+Dump of assembler code for function main:
+   0x0000555555555160 <+0>:	endbr64 
+   0x0000555555555164 <+4>:	push   %rbp
+   0x0000555555555165 <+5>:	mov    %rsp,%rbp
+   0x0000555555555168 <+8>:	sub    $0x10,%rsp
+   0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+   0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+   0x0000555555555180 <+32>:	mov    %edx,%esi
+   0x0000555555555182 <+34>:	mov    %eax,%edi
+   0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+   0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+   0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+   0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+=> 0x0000555555555198 <+56>:	mov    $0x0,%eax
+   0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x6                 6
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x6                 6
+rdi            0x555555556004      93824992239620
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf50      0x7fffffffdf50
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555198      0x555555555198 <main+56>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf50:	0xffffe050
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+0x000055555555519d	14		printf("res = %d\n", res);
+(gdb) disas
+Dump of assembler code for function main:
+   0x0000555555555160 <+0>:	endbr64 
+   0x0000555555555164 <+4>:	push   %rbp
+   0x0000555555555165 <+5>:	mov    %rsp,%rbp
+   0x0000555555555168 <+8>:	sub    $0x10,%rsp
+   0x000055555555516c <+12>:	movl   $0x3,-0xc(%rbp)
+   0x0000555555555173 <+19>:	movl   $0x2,-0x8(%rbp)
+   0x000055555555517a <+26>:	mov    -0x8(%rbp),%edx
+   0x000055555555517d <+29>:	mov    -0xc(%rbp),%eax
+   0x0000555555555180 <+32>:	mov    %edx,%esi
+   0x0000555555555182 <+34>:	mov    %eax,%edi
+   0x0000555555555184 <+36>:	callq  0x555555555149 <mult>
+   0x0000555555555189 <+41>:	mov    %eax,-0x4(%rbp)
+   0x000055555555518c <+44>:	mov    -0x4(%rbp),%eax
+   0x000055555555518f <+47>:	mov    %eax,%esi
+   0x0000555555555191 <+49>:	lea    0xe6c(%rip),%rdi        # 0x555555556004
+   0x0000555555555198 <+56>:	mov    $0x0,%eax
+=> 0x000055555555519d <+61>:	callq  0x555555555050 <printf@plt>
+   0x00005555555551a2 <+66>:	mov    $0x0,%eax
+   0x00005555555551a7 <+71>:	leaveq 
+   0x00005555555551a8 <+72>:	retq   
+End of assembler dump.
+(gdb) info register
+rax            0x0                 0
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x6                 6
+rdi            0x555555556004      93824992239620
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf50      0x7fffffffdf50
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x55555555519d      0x55555555519d <main+61>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf50:	0xffffe050
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+0x0000555555555050 in printf@plt ()
+(gdb) disas
+Dump of assembler code for function printf@plt:
+=> 0x0000555555555050 <+0>:	endbr64 
+   0x0000555555555054 <+4>:	bnd jmpq *0x2f75(%rip)        # 0x555555557fd0 <printf@got.plt>
+   0x000055555555505b <+11>:	nopl   0x0(%rax,%rax,1)
+End of assembler dump.
+(gdb) info register
+rax            0x0                 0
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x6                 6
+rdi            0x555555556004      93824992239620
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf48      0x7fffffffdf48
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555050      0x555555555050 <printf@plt>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf48:	0x555551a2
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+0x0000555555555054 in printf@plt ()
+(gdb) disas
+Dump of assembler code for function printf@plt:
+   0x0000555555555050 <+0>:	endbr64 
+=> 0x0000555555555054 <+4>:	bnd jmpq *0x2f75(%rip)        # 0x555555557fd0 <printf@got.plt>
+   0x000055555555505b <+11>:	nopl   0x0(%rax,%rax,1)
+End of assembler dump.
+(gdb) info register
+rax            0x0                 0
+rbx            0x5555555551b0      93824992235952
+rcx            0x5555555551b0      93824992235952
+rdx            0x2                 2
+rsi            0x6                 6
+rdi            0x555555556004      93824992239620
+rbp            0x7fffffffdf60      0x7fffffffdf60
+rsp            0x7fffffffdf48      0x7fffffffdf48
+r8             0x0                 0
+r9             0x7ffff7fe0d50      140737354009936
+r10            0xb                 11
+r11            0x2                 2
+r12            0x555555555060      93824992235616
+r13            0x7fffffffe050      140737488347216
+r14            0x0                 0
+r15            0x0                 0
+rip            0x555555555054      0x555555555054 <printf@plt+4>
+eflags         0x206               [ PF IF ]
+cs             0x33                51
+ss             0x2b                43
+ds             0x0                 0
+es             0x0                 0
+fs             0x0                 0
+gs             0x0                 0
+(gdb) x $rsp
+0x7fffffffdf48:	0x555551a2
+(gdb) x $rbp
+0x7fffffffdf60:	0x00000000
+(gdb) si
+__printf (format=0x555555556004 "res = %d\n") at printf.c:28
+28	printf.c: 그런 파일이나 디렉터리가 없습니다.
+(gdb) disas
+Dump of assembler code for function __printf:
+=> 0x00007ffff7e28e10 <+0>:	endbr64 
+   0x00007ffff7e28e14 <+4>:	sub    $0xd8,%rsp
+   0x00007ffff7e28e1b <+11>:	mov    %rdi,%r10
+   0x00007ffff7e28e1e <+14>:	mov    %rsi,0x28(%rsp)
+   0x00007ffff7e28e23 <+19>:	mov    %rdx,0x30(%rsp)
+   0x00007ffff7e28e28 <+24>:	mov    %rcx,0x38(%rsp)
+   0x00007ffff7e28e2d <+29>:	mov    %r8,0x40(%rsp)
+   0x00007ffff7e28e32 <+34>:	mov    %r9,0x48(%rsp)
+   0x00007ffff7e28e37 <+39>:	test   %al,%al
+   0x00007ffff7e28e39 <+41>:	je     0x7ffff7e28e72 <__printf+98>
+   0x00007ffff7e28e3b <+43>:	movaps %xmm0,0x50(%rsp)
+   0x00007ffff7e28e40 <+48>:	movaps %xmm1,0x60(%rsp)
+   0x00007ffff7e28e45 <+53>:	movaps %xmm2,0x70(%rsp)
+   0x00007ffff7e28e4a <+58>:	movaps %xmm3,0x80(%rsp)
+   0x00007ffff7e28e52 <+66>:	movaps %xmm4,0x90(%rsp)
+   0x00007ffff7e28e5a <+74>:	movaps %xmm5,0xa0(%rsp)
+   0x00007ffff7e28e62 <+82>:	movaps %xmm6,0xb0(%rsp)
+   0x00007ffff7e28e6a <+90>:	movaps %xmm7,0xc0(%rsp)
+   0x00007ffff7e28e72 <+98>:	mov    %fs:0x28,%rax
+   0x00007ffff7e28e7b <+107>:	mov    %rax,0x18(%rsp)
+   0x00007ffff7e28e80 <+112>:	xor    %eax,%eax
+   0x00007ffff7e28e82 <+114>:	lea    0xe0(%rsp),%rax
+   0x00007ffff7e28e8a <+122>:	xor    %ecx,%ecx
+   0x00007ffff7e28e8c <+124>:	mov    %rsp,%rdx
+   0x00007ffff7e28e8f <+127>:	mov    %rax,0x8(%rsp)
+   0x00007ffff7e28e94 <+132>:	lea    0x20(%rsp),%rax
+   0x00007ffff7e28e99 <+137>:	mov    %r10,%rsi
+   0x00007ffff7e28e9c <+140>:	mov    %rax,0x10(%rsp)
+   0x00007ffff7e28ea1 <+145>:	mov    0x1860a0(%rip),%rax        # 0x7ffff7faef48
+   0x00007ffff7e28ea8 <+152>:	movl   $0x8,(%rsp)
+   0x00007ffff7e28eaf <+159>:	mov    (%rax),%rdi
+   0x00007ffff7e28eb2 <+162>:	movl   $0x30,0x4(%rsp)
+   0x00007ffff7e28eba <+170>:	callq  0x7ffff7e3d9e0 <__vfprintf_internal>
+   0x00007ffff7e28ebf <+175>:	mov    0x18(%rsp),%rcx
+   0x00007ffff7e28ec4 <+180>:	xor    %fs:0x28,%rcx
+   0x00007ffff7e28ecd <+189>:	jne    0x7ffff7e28ed7 <__printf+199>
+   0x00007ffff7e28ecf <+191>:	add    $0xd8,%rsp
+   0x00007ffff7e28ed6 <+198>:	retq   
+   0x00007ffff7e28ed7 <+199>:	callq  0x7ffff7ef6b00 <__stack_chk_fail>
+End of assembler dump.
+(gdb) l
+18	in printf.c
+(gdb) l mult
+1	# include <stdio.h>
+2	
+3	int mult(int n1, int n2)
+4	{
+5		return n1 * n2;
+6	}
+7	
+8	int main(void)
+9	{
+10		int num = 3, num2 = 2;
+11		int res;
+12	
+13		res = mult(num, num2);
+14		printf("res = %d\n", res);
+15	
+16		return 0;
+17	}
+(gdb) 
+
