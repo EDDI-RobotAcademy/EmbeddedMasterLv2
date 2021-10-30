@@ -96,16 +96,14 @@ tree *chg_node(tree *root)
 
 void find_max(tree **root, int *data)
 {
-	tree **tmp = root;
-
-	while(*tmp)
+	while(*root)
 	{
-		if((*tmp)->right)
-			tmp = &(*tmp)->right;
+		if((*root)->right)
+			root = &(*root)->right;
 		else
 		{
-			*data = (*tmp)->data;
-			*tmp = chg_node(*tmp);
+			*data = (*root)->data;
+			*root = chg_node(*root);
 			break;
 		}
 	}
@@ -113,24 +111,23 @@ void find_max(tree **root, int *data)
 
 void nr_delete_tree(tree **root, int data)
 {
-	tree **tmp = root;
 	int num;
 
-	while(*tmp)
+	while(*root)
 	{
-		if((*tmp)->data > data)
-			tmp = &(*tmp)->left;
-		else if((*tmp)->data < data)
-			tmp = &(*tmp)->right;
-		else if((*tmp)->left && (*tmp)->right)
+		if((*root)->data > data)
+			root = &(*root)->left;
+		else if((*root)->data < data)
+			root = &(*root)->right;
+		else if((*root)->left && (*root)->right)
 		{
-			find_max(&(*tmp)->left, &num);
-			(*tmp)->data = num;
+			find_max(&(*root)->left, &num);
+			(*root)->data = num;
 			return;
 		}
 		else
 		{
-			(*tmp) = chg_node(*tmp);
+			(*root) = chg_node(*root);
 			return;
 		}
 	}
@@ -140,25 +137,34 @@ void nr_delete_tree(tree **root, int data)
 
 void delete_tree_data(tree **root, int data)
 {
-	tree *tmp;
+	int num;
 	root = find_tree_data(root, data);
 
-	tmp = *root;
-
+#if 0
 	if (!(*root)->left)
 	{
 		*root = (*root)->right;
-		free(tmp);
 	}
 	else if (!(*root)->right)
 	{
 		*root = (*root)->left;
-		free(tmp);
 	}
 	else
 	{
 		//int max = proc_left_min(root);
 		//int min = proc_right_min(root);
+	}
+	free(tmp);
+#endif
+
+	if((*root)->left && (*root)->right)
+	{
+		find_max(&(*root)->left, &num);
+		(*root)->data = num;
+	}
+	else
+	{
+		(*root) = chg_node(*root);
 	}
 }
 
@@ -186,19 +192,19 @@ int main(void)
 		printf("데이터를 찾을 수 없습니다!\n");
 
 	printf("12 삭제\n");
-	//delete_tree_data(&root, 12);
-	nr_delete_tree(&root, 12);
+	delete_tree_data(&root, 12);
+	//nr_delete_tree(&root, 12);
 	print_tree(root);
 
 	printf("10 삭제\n");
-	//delete_tree_data(&root, 10);
-	nr_delete_tree(&root, 10);
+	delete_tree_data(&root, 10);
+	//nr_delete_tree(&root, 10);
 	print_tree(root);
 
 	nr_insert_tree_data(&root, 54);
 	printf("55 삭제\n");
-	//delete_tree_data(&root, 55);
-	nr_delete_tree(&root, 55);
+	delete_tree_data(&root, 55);
+	//nr_delete_tree(&root, 55);
 	print_tree(root);
 
 	return 0;
