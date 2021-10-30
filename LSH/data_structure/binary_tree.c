@@ -80,6 +80,64 @@ tree **find_tree_data(tree **root, int data)
 	return NULL;
 }
 
+tree *chg_node(tree *root)
+{
+	tree *tmp = root;
+
+	if(!root->right)
+		root = root->left;
+	else if(!root->left)
+		root = root->right;
+
+	free(tmp);
+
+	return root;
+}
+
+void find_max(tree **root, int *data)
+{
+	tree **tmp = root;
+
+	while(*tmp)
+	{
+		if((*tmp)->right)
+			tmp = &(*tmp)->right;
+		else
+		{
+			*data = (*tmp)->data;
+			*tmp = chg_node(*tmp);
+			break;
+		}
+	}
+}
+
+void nr_delete_tree(tree **root, int data)
+{
+	tree **tmp = root;
+	int num;
+
+	while(*tmp)
+	{
+		if((*tmp)->data > data)
+			tmp = &(*tmp)->left;
+		else if((*tmp)->data < data)
+			tmp = &(*tmp)->right;
+		else if((*tmp)->left && (*tmp)->right)
+		{
+			find_max(&(*tmp)->left, &num);
+			(*tmp)->data = num;
+			return;
+		}
+		else
+		{
+			(*tmp) = chg_node(*tmp);
+			return;
+		}
+	}
+
+	printf("Not Found\n");
+}
+
 void delete_tree_data(tree **root, int data)
 {
 	tree *tmp;
@@ -90,18 +148,18 @@ void delete_tree_data(tree **root, int data)
 	if (!(*root)->left)
 	{
 		*root = (*root)->right;
+		free(tmp);
 	}
 	else if (!(*root)->right)
 	{
 		*root = (*root)->left;
+		free(tmp);
 	}
 	else
 	{
-		int max = proc_left_max(root);
+		//int max = proc_left_min(root);
 		//int min = proc_right_min(root);
 	}
-
-	free(tmp);
 }
 
 int main(void)
@@ -128,11 +186,19 @@ int main(void)
 		printf("데이터를 찾을 수 없습니다!\n");
 
 	printf("12 삭제\n");
-	delete_tree_data(&root, 12);
+	//delete_tree_data(&root, 12);
+	nr_delete_tree(&root, 12);
 	print_tree(root);
 
 	printf("10 삭제\n");
-	delete_tree_data(&root, 10);
+	//delete_tree_data(&root, 10);
+	nr_delete_tree(&root, 10);
+	print_tree(root);
+
+	nr_insert_tree_data(&root, 54);
+	printf("55 삭제\n");
+	//delete_tree_data(&root, 55);
+	nr_delete_tree(&root, 55);
 	print_tree(root);
 
 	return 0;
