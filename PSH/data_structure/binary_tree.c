@@ -1,4 +1,6 @@
+#include <stdbool.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 typedef struct _tree tree;
@@ -9,6 +11,13 @@ struct _tree
 	struct _tree *right;
 };
 
+typedef struct _stack stack;
+struct _stack
+{
+	void *data;
+	struct _stack *link;
+};
+
 tree *create_tree_node(void)
 {
 	tree *tmp;
@@ -16,6 +25,16 @@ tree *create_tree_node(void)
 	tmp = (tree *)malloc(sizeof(tree));
 	tmp->left = 0;
 	tmp->right = 0;
+
+	return tmp;
+}
+
+stack *create_stack_node(void)
+{
+	stack *tmp;
+	
+	tmp = (stack *)malloc(sizeof(stack));
+	tmp->link = NULL;
 
 	return tmp;
 }
@@ -55,6 +74,73 @@ void nr_insert_tree_data(tree **root, int data)
 	(*root)->data = data;
 }
 
+void push(stack **top, tree *root)
+{
+	if(root)
+	{
+		stack *tmp = *top;
+		*top = create_stack_node();
+		(*top)->data = (tree*) root;
+		(*top)->link = tmp;
+		//printf("push data = %d\n",(int)root->data);
+	}
+}
+
+tree *pop(stack **top)
+{
+	void *data;	
+	stack *tmp;
+
+	tmp = *top;
+
+	data = (tree*) (*top)->data;
+	*top = (*top)->link; 
+
+	free(tmp);
+
+	return data;
+}
+
+bool stack_is_not_empty(stack *top)
+{
+	if(!top)
+	{
+		//printf("Stack is empty\n");
+		return 0;
+	}
+	
+	return 1;
+}
+
+void nr_print_tree(tree **root)
+{
+	tree **tmp = root;
+	stack *top = NULL;
+
+	push(&top, *tmp);
+
+	while(stack_is_not_empty(top))
+	{
+		tree *t = (tree *)pop(&top);
+		tmp = &t;
+
+		printf("data = %d, ", (*tmp)->data);
+
+		if((*tmp)->left)
+			printf("left = %d, ", (*tmp)->left->data);
+		else
+			printf("left = NULL, ");
+
+		if((*tmp)->right)
+			printf("right = %d\n", (*tmp)->right->data);
+		else
+			printf("right = NULL\n");
+
+		push(&top, (*tmp)->right);
+		push(&top, (*tmp)->left);
+	}
+}
+
 void print_tree(tree *root)
 {
 	if (root)
@@ -80,62 +166,92 @@ tree **find_tree_data(tree **root, int data)
 	return NULL;
 }
 
-int proc_left_max(tree **root)
+tree *chg_node(tree *root)
 {
-	root = &(*root)->left;
-	while((*root)->right)
-	{
-		root = &(*root)->right;
-	}
-	int data = (*root)->data;
-	tree *tmp = *root;
-	*root = 0;
+	tree *tmp = root;
+
+	if(!root->right)
+		root = root->left;
+	else if(!root->left)
+		root = root->right;
+
 	free(tmp);
-	return data;
+
+	return root;
 }
 
-int proc_right_min(tree **root)
+void find_max(tree **root, int *data)
 {
-	root = &(*root)->right;	
-	while((*root)->left)
+	while(*root)
 	{
-		root = &(*root)->left;
+		if((*root)->right)
+			root = &(*root)->right;
+		else
+		{
+			*data = (*root)->data;
+			*root = chg_node(*root);
+			break;
+		}
 	}
-	int data = (*root)->data;
-	tree *tmp = *root;
-	*root = 0;
-	free(tmp);
-	return data;
+}
+
+void nr_delete_tree(tree **root, int data)
+{
+	int num;
+
+	while(*root)
+	{
+		if((*root)->data > data)
+			root = &(*root)->left;
+		else if((*root)->data < data)
+			root = &(*root)->right;
+		else if((*root)->left && (*root)->right)
+		{
+			find_max(&(*root)->left, &num);
+			(*root)->data = num;
+			return;
+		}
+		else
+		{
+			(*root) = chg_node(*root);
+			return;
+		}
+	}
+
+	printf("Not Found\n");
 }
 
 void delete_tree_data(tree **root, int data)
 {
-	tree *tmp;
+	int num;
 	root = find_tree_data(root, data);
 
-	tmp = *root;
-
+#if 0
 	if (!(*root)->left)
 	{
 		*root = (*root)->right;
-		free(tmp);
 	}
 	else if (!(*root)->right)
 	{
 		*root = (*root)->left;
-		free(tmp);
 	}
 	else
 	{
-		int max = proc_left_max(root);
-		(*root)->data = max;
-		printf("max = %d\n", max);
-
-//		int min = proc_right_min(root);
-//		(*root)->data = min;
-//		printf("min = %d\n", min);
+		//int max = proc_left_min(root);
+		//int min = proc_right_min(root);
 	}
+	free(tmp);
+#endif
 
+	if((*root)->left && (*root)->right)
+	{
+		find_max(&(*root)->left, &num);
+		(*root)->data = num;
+	}
+	else
+	{
+		(*root) = chg_node(*root);
+	}
 }
 
 int main(void)
@@ -143,35 +259,43 @@ int main(void)
 	int i;
 	tree *root = NULL;
 	tree **tmp = NULL;
-	int data[] = { 34, 17, 55, 10, 13, 12, 53, 57, 54, 51, 52 };
+	int data[] = { 34, 17, 55, 10, 13, 12, 53, 57 };
 
-	for (i = 0; i < 11; i++)
+	for (i = 0; i < 8; i++)
 	{
 		//insert_tree_data(&root, data[i]);
 		nr_insert_tree_data(&root, data[i]);
 	}
 
-	print_tree(root);
+	//print_tree(root);
+	nr_print_tree(&root);
 
-	if (tmp = find_tree_data(&root, 13))
-		printf("tmp->data = %d\n", (*tmp)->data);
-
-	if (tmp = find_tree_data(&root, 77))
-		printf("tmp->data = %d\n", (*tmp)->data);
-	else
-		printf("데이터를 찾을 수 없습니다!\n");
-
+//	if (tmp = find_tree_data(&root, 13))
+//		printf("tmp->data = %d\n", (*tmp)->data);
+//
+//	if (tmp = find_tree_data(&root, 77))
+//		printf("tmp->data = %d\n", (*tmp)->data);
+//	else
+//		printf("데이터를 찾을 수 없습니다!\n");
+//
 //	printf("12 삭제\n");
 //	delete_tree_data(&root, 12);
-//	print_tree(root);
+//	//nr_delete_tree(&root, 12);
+//	//print_tree(root);
+//	nr_print_tree(&root);
 //
 //	printf("10 삭제\n");
 //	delete_tree_data(&root, 10);
-//	print_tree(root);
-
-	printf("55 삭제\n");
-	delete_tree_data(&root, 55);
-	print_tree(root);
+//	//nr_delete_tree(&root, 10);
+//	//print_tree(root);
+//	nr_print_tree(&root);
+//
+//	nr_insert_tree_data(&root, 54);
+//	printf("55 삭제\n");
+//	delete_tree_data(&root, 55);
+//	//nr_delete_tree(&root, 55);
+//	//print_tree(root);
+//	nr_print_tree(&root);
 
 	return 0;
 }
