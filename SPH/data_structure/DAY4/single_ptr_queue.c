@@ -18,20 +18,19 @@ queue *create_queue_node()
 	return tmp;
 }
 
-queue *enqueue_data(queue **head, int data)
+queue *enqueue_data(queue *head, int data)
 {
 	queue *tmp = NULL;
 #if Guide_Code
-	if (!(*head))
+	if (!head)
 	{
-		*head = create_queue_node();
-		(*head)->data = data;
-		tmp = *head;
-		return tmp;
+		head = create_queue_node();
+		head->data = data;
+		return head;
 	}
 	// 요기서 뭘 해야할까요 ?
-	tmp = enqueue_data(&(*head)->link, data);
-	return tmp;
+	head->link = enqueue_data(head->link, data);
+	return head;
 #else
 	if(!(*head))
 	{
@@ -56,15 +55,16 @@ queue *enqueue_data(queue **head, int data)
 #endif
 }
 
-int dequeue_data(queue **head)
+queue *dequeue_data(queue *head)
 {
 	int data;
-	queue *tmp = *head;
+	queue *tmp = head;
 
-	data = (*head)->data;
-	(*head) = tmp->link;
+	data = head->data;
+	head = tmp->link;
 	free(tmp);
-	return data;
+	printf("Dequeue Data = %d\n", data);
+	return head;
 }
 
 void enqueue_data_idx(queue **head, int data, int idx)
@@ -126,12 +126,14 @@ int main(void)
 	int data[] = { 10, 20, 30, 40 };
 
 #if Guide_Code
+	printf("Enqueue Data\n");
 	for (i = 0; i < 4; i++)
 	{
-		head = enqueue_data(&head, data[i]);
+		head = enqueue_data(head, data[i]);
 	}
 	print_queue(head);
 
+	printf("\nDequeue Data\n");
 	for (i = 0; i < 5; i++)
 	{
 		if(!head)
@@ -139,22 +141,22 @@ int main(void)
 			printf("Queue is Empty\n");
 			break;
 		}
-		printf("Dequeue data = %d\n", dequeue_data(&head));
+		head = dequeue_data(head);
 		print_queue(head);
 	}
 	printf("\n");
 
-	for (i = 0; i < 4; i++)
+	/*for (i = 0; i < 4; i++)
 	{
 		enqueue_data(&head, data[i]);
 	}
-	print_queue(head);
+	print_queue(head);*/
 
 	// 특정 인덱스에 값 넣기
 	//enqueue_data_idx(&head, 33, 2);
-	enqueue_data_idx(&head, 35, 3);
+	//enqueue_data_idx(&head, 35, 3);
 	//enqueue_data_idx(&head, 50, 5);
-	print_queue(head);
+	//print_queue(head);
 
 	// 특정 인덱스 값 빼기
 	//dequeue_data_idx(&head, 0);
@@ -163,7 +165,7 @@ int main(void)
 	//printf("Dequeue Index Data = %d\n", dequeue_data_idx(&head, 2));
 	//printf("Dequeue Index Data = %d\n", dequeue_data_idx(&head, 3));
 	//printf("Dequeue Index Data = %d\n", dequeue_data_idx(&head, 4));
-	printf("Dequeue Index Data = %d\n", dequeue_data_idx(&head, 5));
+	//printf("Dequeue Index Data = %d\n", dequeue_data_idx(&head, 5));
 #else
 	printf("Start Enqueue!\n");
 	for (i = 0; i < 4; i++)
