@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #define Guide_Code 1
 //#define tow_child_max 2
@@ -10,6 +11,13 @@ struct _tree
 	int data;
 	struct _tree *left;
 	struct _tree *right;
+};
+
+typedef struct _stack stack;
+struct _stack
+{
+	void *data;
+	stack *link;
 };
 
 tree *create_tree_node(void)
@@ -187,6 +195,79 @@ void print_tree(tree *root)
 	}
 }
 
+bool stack_is_not_empty(stack *top)
+{
+	if(!top)
+		return false;
+	else
+		return true;
+}
+
+stack *create_stack_node(void)
+{
+	stack *tmp = NULL;
+	tmp = (stack *)malloc(sizeof(stack));
+	return tmp;
+}
+
+void push(stack **top, void *data)
+{
+	stack *tmp = *top;
+	*top = create_stack_node();
+	(*top)->data = (tree *)data;
+	(*top)->link = tmp;
+}
+
+void *pop(stack **top)
+{
+	if(!stack_is_not_empty(*top))
+		return NULL;
+	stack *tmp = *top;
+	void *data = tmp->data;
+	*top = tmp->link;
+	free(tmp);
+	return data;
+}
+
+#if Guide_Code
+void nr_print_tree(tree **root)
+{
+	tree **tmp = root;
+	stack *top = NULL;
+
+	push(&top, *tmp);
+
+	while(stack_is_not_empty(top))
+	{
+		tree *t = (tree*)pop(&top);
+		tmp = &t;
+
+		printf("data = %d, ", (*tmp)->data);
+
+		if((*tmp)->left)
+		{
+			printf("left = %d, ", (*tmp)->left->data);
+			push(&top, (*tmp)->left);
+		}
+		else
+			printf("left = NULL, ");
+		if((*tmp)->right)
+		{
+			printf("right = %d\n", (*tmp)->right->data);
+			push(&top, (*tmp)->right);
+		}
+		else
+			printf("right = NULL\n");
+
+		//아래와 같이 psuh를 left, right 연속으로 진행하면 *top의 데이터 값이 바뀐다.
+		//*top값이 right push -> left push가 되어 계속 left값만 출력하게 된다.
+
+		//push(&top, (*tmp)->right);
+		//push(&top, (*tmp)->left);
+	}
+}
+#endif
+
 int main(void)
 {
 	int i;
@@ -199,7 +280,8 @@ int main(void)
 		insert_tree_data(&root, data[i]);
 	}
 
-	print_tree(root);
+	//print_tree(root);
+	nr_print_tree(&root);
 
 	printf("\nFind Tree Data\n");
 	if(tmp = find_tree_data(&root, 13)) 
@@ -216,6 +298,8 @@ int main(void)
 	//delete_tree_node(&root, 17);
 	delete_tree_node(&root, 34);
 
-	print_tree(root);
+	//print_tree(root);
+	nr_print_tree(&root);
+
 	return 0;
 }

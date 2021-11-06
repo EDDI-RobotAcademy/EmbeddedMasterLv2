@@ -1,6 +1,5 @@
 #include <stdbool.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <stdio.h>
 
 typedef struct _tree tree;
@@ -25,16 +24,6 @@ tree *create_tree_node(void)
 	tmp = (tree *)malloc(sizeof(tree));
 	tmp->left = 0;
 	tmp->right = 0;
-
-	return tmp;
-}
-
-stack *create_stack_node(void)
-{
-	stack *tmp;
-	
-	tmp = (stack *)malloc(sizeof(stack));
-	tmp->link = NULL;
 
 	return tmp;
 }
@@ -74,42 +63,50 @@ void nr_insert_tree_data(tree **root, int data)
 	(*root)->data = data;
 }
 
-void push(stack **top, tree *root)
+void *pop(stack **top)
 {
-	if(root)
+	stack *tmp = *top;
+	void *data = NULL;
+
+	if(*top == NULL)
 	{
-		stack *tmp = *top;
-		*top = create_stack_node();
-		(*top)->data = (tree*) root;
-		(*top)->link = tmp;
-		//printf("push data = %d\n",(int)root->data);
+		printf("stack is empty!\n");
+		return NULL;
 	}
-}
 
-tree *pop(stack **top)
-{
-	void *data;	
-	stack *tmp;
-
-	tmp = *top;
-
-	data = (tree*) (*top)->data;
-	*top = (*top)->link; 
-
+	data = (*top)->data;
+	*top = (*top)->link;
 	free(tmp);
 
 	return data;
 }
 
+stack *create_stack_node(void)
+{
+	stack *tmp;
+	tmp = (stack *)malloc(sizeof(stack));
+	tmp->link = NULL;
+	return tmp;
+}
+
+void push(stack **top, void *data)
+{
+	if(data == NULL)
+		return;
+
+	stack *tmp = *top;
+	*top = create_stack_node();
+	//(*top)->data = malloc(sizeof(void *));
+	(*top)->data = data;
+	(*top)->link = tmp;
+}
+
 bool stack_is_not_empty(stack *top)
 {
-	if(!top)
-	{
-		//printf("Stack is empty\n");
-		return 0;
-	}
-	
-	return 1;
+	if(top != NULL)
+		return true;
+	else
+		return false;
 }
 
 void nr_print_tree(tree **root)
@@ -270,32 +267,32 @@ int main(void)
 	//print_tree(root);
 	nr_print_tree(&root);
 
-//	if (tmp = find_tree_data(&root, 13))
-//		printf("tmp->data = %d\n", (*tmp)->data);
-//
-//	if (tmp = find_tree_data(&root, 77))
-//		printf("tmp->data = %d\n", (*tmp)->data);
-//	else
-//		printf("데이터를 찾을 수 없습니다!\n");
-//
-//	printf("12 삭제\n");
-//	delete_tree_data(&root, 12);
-//	//nr_delete_tree(&root, 12);
-//	//print_tree(root);
-//	nr_print_tree(&root);
-//
-//	printf("10 삭제\n");
-//	delete_tree_data(&root, 10);
-//	//nr_delete_tree(&root, 10);
-//	//print_tree(root);
-//	nr_print_tree(&root);
-//
-//	nr_insert_tree_data(&root, 54);
-//	printf("55 삭제\n");
-//	delete_tree_data(&root, 55);
-//	//nr_delete_tree(&root, 55);
-//	//print_tree(root);
-//	nr_print_tree(&root);
+	if (tmp = find_tree_data(&root, 13))
+		printf("tmp->data = %d\n", (*tmp)->data);
+
+	if (tmp = find_tree_data(&root, 77))
+		printf("tmp->data = %d\n", (*tmp)->data);
+	else
+		printf("데이터를 찾을 수 없습니다!\n");
+
+	printf("12 삭제\n");
+	delete_tree_data(&root, 12);
+	//nr_delete_tree(&root, 12);
+	//print_tree(root);
+	nr_print_tree(&root);
+
+	printf("10 삭제\n");
+	delete_tree_data(&root, 10);
+	//nr_delete_tree(&root, 10);
+	//print_tree(root);
+	nr_print_tree(&root);
+
+	nr_insert_tree_data(&root, 54);
+	printf("55 삭제\n");
+	delete_tree_data(&root, 55);
+	//nr_delete_tree(&root, 55);
+	//print_tree(root);
+	nr_print_tree(&root);
 
 	return 0;
 }
