@@ -27,7 +27,11 @@ void adjust_avl_level(avl **root, int data, int cnt)
 {
 	while(*root)
 	{
-		(*root)->level = cnt--;
+		if ((*root)->level < cnt)
+			(*root)->level = cnt;
+
+		cnt--;
+
 		if((*root)->data > data)
 			root = &(*root)->left;
 		else if((*root)->data < data)
