@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-//#define Guide_Code 1
-#define Debug 2
+#define Guide_Code 1
+//#define Debug 2
 
 typedef struct _avl avl;
 struct _avl
@@ -173,7 +173,7 @@ void update_level(avl **root)
 		(*root)->level = (*root)->left->level + 1;
 	//둘 다 있는 경우
 	else
-		(*root)->level = ((*root)->left->level > (*root)->right->level) ? (*root)->left->level+1 : (*root)->right->level+1;
+		(*root)->level = ((*root)->left->level >= (*root)->right->level) ? (*root)->left->level+1 : (*root)->right->level+1;
 }
 
 int calc_balance_factor(avl **root)
@@ -308,7 +308,7 @@ void adjust_balance(avl **root, int data)
 	int factor = calc_balance_factor(root);
 	printf("Node %d's balance factor = %d\n", (*root)->data, factor);
 
-	rotation(factor, root, data);
+	//rotation(factor, root, data);
 }
 
 void insert_avl(avl **root, int data)

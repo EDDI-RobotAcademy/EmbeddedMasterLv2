@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 #define Guide_Code 1
-//#define tow_child_max 2
+//#define two_child_max 2
 
 typedef struct _tree tree;
 struct _tree
@@ -212,9 +212,12 @@ stack *create_stack_node(void)
 
 void push(stack **top, void *data)
 {
+	if(data == NULL)
+		return;
+
 	stack *tmp = *top;
 	*top = create_stack_node();
-	(*top)->data = (tree *)data;
+	(*top)->data = data;
 	(*top)->link = tmp;
 }
 
