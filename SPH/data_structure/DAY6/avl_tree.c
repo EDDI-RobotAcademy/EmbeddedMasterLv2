@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-//#define Guide_Code 1
-#define Debug 2
+#define Guide_Code 1
+//#define Debug 2
 
 typedef struct _avl avl;
 struct _avl
@@ -99,8 +99,10 @@ void print_avl(avl *tree)
             printf("right = NULL\t");
         }
 
-        printf("level = %2d\t", tmp->level);
+        printf("level = %2d\n", tmp->level);
+#if Debug
 		printf("address = %x\n", tmp);
+#endif
 
         print_avl(tmp->right);
     }
@@ -291,7 +293,7 @@ int main(void)
     int i;
 
 #if Guide_Code
-    int data[30] = { 0 };
+    int data[511] = { 0 };
     int len = sizeof(data) / sizeof(int);
 
 	srand(time(NULL));
