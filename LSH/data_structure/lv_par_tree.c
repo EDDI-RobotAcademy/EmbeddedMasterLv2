@@ -12,6 +12,14 @@ struct _avl
 	int level;
 };
 
+#define ABS(x)		((x > 0) ? (x) : -(x))
+
+#define LL			-2
+#define RR			2
+
+#define LR			-3
+#define RL			3
+
 avl *create_avl_node(void)
 {
 	avl *tmp;
@@ -25,9 +33,70 @@ avl *create_avl_node(void)
 	return tmp;
 }
 
-void adjust_avl_level(avl **root)
+void ll_rotation(avl **root)
 {
-	int right, left;
+}
+
+void lr_rotation(avl **root)
+{
+}
+
+void rr_rotation(avl **root)
+{
+}
+
+void rl_rotation(avl **root)
+{
+}
+
+void rotation(avl **root, int method)
+{
+	switch(method)
+	{
+		case LL:
+			printf("LL Rotation\n");
+			ll_rotation(root);
+			break;
+
+		case LR:
+			printf("LR Rotation\n");
+			lr_rotation(root);
+			break;
+
+		case RR:
+			printf("RR Rotation\n");
+			rr_rotation(root);
+			break;
+
+		case RL:
+			printf("RL Rotation\n");
+			rl_rotation(root);
+			break;
+	}
+}
+
+int decision_rotation(avl **root, int gap, int data)
+{
+	if (gap == LL)
+	{
+		if ((*root)->data < data)
+			return LR;
+
+		return LL;
+	}
+	else	// RR
+	{
+		if ((*root)->data > data)
+			return RL;
+
+		return RR;
+	}
+}
+
+void adjust_avl_level(avl **root, int data)
+{
+	int right, left, gap;
+	avl **backup;
 
 	while(*root)
 	{
@@ -41,11 +110,17 @@ void adjust_avl_level(avl **root)
 		else
 			left = 0;
 
+		gap = right - left;
+
+		if (ABS(gap) > 1)
+			rotation(root, decision_rotation(backup, right - left, data));
+
 		if (right > left)
 			(*root)->level = right + 1;
 		else
 			(*root)->level = left + 1;
 
+		backup = root;
 		root = &(*root)->parent;
 	}
 }
@@ -67,7 +142,7 @@ void nr_insert_avl_data(avl **root, int data)
 	(*root)->data = data;
 	(*root)->parent = backup;
 
-	adjust_avl_level(&(*root)->parent);
+	adjust_avl_level(&(*root)->parent, data);
 }
 
 void print_tree(avl *root)
@@ -101,9 +176,12 @@ int main(void)
 {
 	int i;
 	avl *root = NULL;
-	int data[] = { 34, 17, 55, 10, 13, 12, 53, 57 };
+	//int data[] = { 34, 17, 55, 10, 13, 12, 53, 57 };
+	//int data[] = { 34, 17, 55, 10, 13 };
+	int data[] = { 50, 100, 25, 75, 125, 37, 12, 6, 30, 40, 45 };
+	int len = sizeof(data) / sizeof(int);
 
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < len; i++)
 		nr_insert_avl_data(&root, data[i]);
 
 	print_tree(root);
