@@ -3,8 +3,16 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define Guide_Code 1
-//#define Debug 2
+//#define Guide_Code 1
+#define Debug 2
+//#define Debug_2 3
+
+#define ABS(x) ((x > 0) ? (x) : -(x))
+
+#define RR 1
+#define RL 2
+#define LL 3
+#define LR 4
 
 typedef struct _avl avl;
 struct _avl
@@ -78,9 +86,6 @@ void print_avl(avl *tree)
         if (tmp->left)
         {
             printf("left = %4d\t", tmp->left->data);
-#if Debug
-			printf("left address = %x", tmp->left);
-#endif
         }
         else
         {
@@ -90,9 +95,6 @@ void print_avl(avl *tree)
         if (tmp->right)
         {
             printf("right = %4d\t", tmp->right->data);
-#if Debug
-			printf("right address = %x\t", tmp->right);
-#endif
         }
         else
         {
@@ -100,10 +102,6 @@ void print_avl(avl *tree)
         }
 
         printf("level = %2d\n", tmp->level);
-#if Debug
-		printf("address = %x\n", tmp);
-#endif
-
         print_avl(tmp->right);
     }
 }
@@ -139,12 +137,9 @@ avl **find_tree_data(avl **root, int data)
 
 void update_level(avl **root)
 {
-	int left_level;
-	int right_level;
-
 	//왼쪽, 오른쪽 자식노드가 둘 다 없는 경우
 	if(!(*root)->left && !(*root)->right)
-		return;
+		(*root)->level = (*root)->level;
 	//오른쪽 자식노드만 있는 경우
 	else if(!(*root)->left && (*root)->right)
 		(*root)->level = (*root)->right->level + 1;
@@ -159,99 +154,406 @@ void update_level(avl **root)
 int calc_balance_factor(avl **root)
 {
 	int factor;
-	if(!(*root)->left && !(*root)->right)
-	{
-		factor = 0;
-	}
-	else if((*root)->left && !(*root)->right)
-		factor = (*root)->left->level;
-	else if(!(*root)->left && (*root)->right)
-		factor = 0-(*root)->right->level;
+	int left_level;
+	int right_level;
+
+	if((*root)->left)
+		left_level = (*root)->left->level;
 	else
-		factor = (*root)->left->level - (*root)->right->level;
+		left_level = 0;
+
+	if((*root)->right)
+		right_level = (*root)->right->level;
+	else
+		right_level = 0;
+
+	factor = left_level - right_level;
 
 	return factor;
 }
 
-void rotation(int factor, avl **root, int data)
+int decide_rotation(int factor, avl **root, int data)
 {
-	avl *high;
-	avl *mid;
-	avl *low;
+	if(factor < 0)
+	{
+		if((*root)->right->data < data)
+			return RR;
+		else
+			return RL;
+	}
+	else
+	{
+		if((*root)->left->data > data)
+			return LL;
+		else
+			return LR;
+	}
+}
 
+void RR_rotation(avl **root)
+{
+	avl *high, *mid, *low;
+
+	high = *root;
+	mid = (*root)->right;
+	low = (*root)->right->right;
+
+	if(low->left)
+		high->right = low->left;
+	else
+		high->right = NULL;
+
+	mid->left = high;
+	*root = mid;
+}
+
+void RL_rotation(avl **root)
+{
+	avl *high, *mid, *low;
+
+	high = *root;
+	mid = (*root)->right;
+	low = (*root)->right->left;
+
+	if(low->right)
+		mid->left = low->right;
+	else
+		mid->left = NULL;
+
+	mid->level--;
+	low->right = mid;
+	(*root)->right = low;
+}
+
+void LL_rotation(avl **root)
+{
+	avl *high, *mid, *low;
+
+	high = *root;
+	mid = (*root)->left;
+	low = (*root)->left->left;
+
+	if(mid->right)
+		high->left = mid->right;
+	else
+		high->left = NULL;
+
+	mid->right = high;
+
+	*root = mid;
+}
+
+void LR_rotation(avl **root)
+{
+	avl *high, *mid, *low;
+
+	high = *root;
+	mid = (*root)->left;
+	low = (*root)->left->right;
+
+	if(low->left)
+		mid->right = low->left;
+	else
+		mid->right = NULL;
+
+	mid->level--;
+	low->left = mid;
+	(*root)->left = low;
+}
+
+void run_rotation(int factor, avl **root, int data)
+{
+	//avl *high;
+	//avl *mid;
+	//avl *low;
+
+	int rotation = decide_rotation(factor, root, data);
+
+	switch(rotation)
+	{
+		case RR:
+			RR_rotation(root);
+			(*root)->left->level = (*root)->left->level + factor;
+			update_level(&(*root)->right);
+			update_level(root);
+			break;
+		case RL:
+			RL_rotation(root);
+			run_rotation(factor, root, (*root)->right->right->data);
+			break;
+		case LL:
+			LL_rotation(root);
+			(*root)->right->level = (*root)->right->level - factor;
+			update_level(&(*root)->left);
+			update_level(root);
+			break;
+		case LR:
+			LR_rotation(root);
+			run_rotation(factor, root, (*root)->left->left->data);
+			break;
+	}
+/*
 	//트리가 오른쪽 불균형일 때
 	if(factor < 0)
 	{
-		high = *root;
-		mid = (*root)->right;
-
 		//RR
 		if((*root)->right->data < data)
 		{
+			high = *root;
+			mid = (*root)->right;
 			low = (*root)->right->right;
+#if Debug_2
+			printf("before RR rotation\n");
+			printf("root data = %d\t", (*root)->data);
+			printf("root left data = %d\t", (*root)->left->data);
+			printf("root right data = %d\n", (*root)->right->data);
 
-			high->right = low->left;
+			printf("high data = %d\t", high->data);
+			printf("high left data = %d\t", high->left->data);
+			printf("high right data = %d\t", high->right->data);
+
+			printf("mid data = %d\t", mid->data);
+			printf("mid left data = %d\t", mid->left->data);
+			printf("mid right data = %d\t", mid->right->data);
+
+			printf("low data = %d\t", low->data);
+			printf("low left data = %d\t", low->left->data);
+			printf("low right data = %d\t", low->right->data);
+
+			printf("root level = %d\t", (*root)->level);
+			printf("left level = %d\t", (*root)->left->level);
+			printf("right level = %d\n", (*root)->right->level);
+#endif
+			if(low->left)
+				high->right = low->left;
+			else
+				high->right = NULL;
+
 			high->level = high->level + factor;
+
+			mid->left = high;
 
 			*root = mid;
 
-			(*root)->left = high;
-
 			(*root)->right = low;
+#if Debug_2
+			printf("RR rotation\n");
+			printf("root data = %d\t", (*root)->data);
+			printf("root left data = %d\t", (*root)->left->data);
+			printf("root right data = %d\t", (*root)->right->data);
 
+			printf("high data = %d\t", high->data);
+			printf("high left data = %d\t", high->left->data);
+			printf("high right data = %d\t", high->right->data);
+
+			printf("mid data = %d\t", mid->data);
+			printf("mid left data = %d\t", mid->left->data);
+			printf("mid right data = %d\t", mid->right->data);
+
+			printf("low data = %d\t", low->data);
+			printf("low left data = %d\t", low->left->data);
+			printf("low right data = %d\t", low->right->data);
+
+			printf("root level = %d\t", (*root)->level);
+			printf("left level = %d\t", (*root)->left->level);
+			printf("right level = %d\n", (*root)->right->level);
+#endif
 			update_level(&(*root)->right);
 			update_level(root);
-
-
 		}
 		//RL
 		else
 		{
+			high = *root;
+			mid = (*root)->right;
 			low = (*root)->right->left;
+#if Debug_2
+			printf("before RL rotation\n");
+			printf("root data = %d\t", (*root)->data);
+			printf("root left data = %d\t", (*root)->left->data);
+			printf("root right data = %d\n", (*root)->right->data);
 
-			mid->left = low->right;
+			printf("high data = %d\t", high->data);
+			printf("high left data = %d\t", high->left->data);
+			printf("high right data = %d\t", high->right->data);
+
+			printf("mid data = %d\t", mid->data);
+			printf("mid left data = %d\t", mid->left->data);
+			printf("mid right data = %d\t", mid->right->data);
+
+			printf("low data = %d\t", low->data);
+			printf("low left data = %d\t", low->left->data);
+			printf("low right data = %d\t", low->right->data);
+
+			printf("root level = %d\t", (*root)->level);
+			printf("left level = %d\t", (*root)->left->level);
+			printf("right level = %d\n", (*root)->right->level);
+#endif
+			if(low->right)
+				mid->left = low->right;
+			else
+				mid->left = NULL;
+
+			mid->level--;
 
 			low->right = mid;
-			low->right->level--;
 
 			(*root)->right = low;
+#if Debug_2
+			printf("RL rotation\n");
+			printf("root data = %d\t", (*root)->data);
+			printf("root left data = %d\t", (*root)->left->data);
+			printf("root right data = %d\t", (*root)->right->data);
 
+			printf("high data = %d\t", high->data);
+			printf("high left data = %d\t", high->left->data);
+			printf("high right data = %d\t", high->right->data);
+
+			printf("mid data = %d\t", mid->data);
+			printf("mid left data = %d\t", mid->left->data);
+			printf("mid right data = %d\t", mid->right->data);
+
+			printf("low data = %d\t", low->data);
+			printf("low left data = %d\t", low->left->data);
+			printf("low right data = %d\t", low->right->data);
+
+			printf("root level = %d\t", (*root)->level);
+			printf("left level = %d\t", (*root)->left->level);
+			printf("right level = %d\n", (*root)->right->level);
+#endif
 			rotation(factor, root, (*root)->right->right->data);
 		}
 	}
 	//트리가 왼쪽 불균형 일 때
 	else
 	{
-		high = *root;
-		mid = (*root)->left;
 		//LL
 		if((*root)->left->data > data)
 		{
+			high = *root;
+			mid = (*root)->left;
 			low = (*root)->left->left;
+#if Debug_2
+			printf("before LL rotation\n");
+			printf("root data = %d\t", (*root)->data);
+			printf("root left data = %d\t", (*root)->left->data);
+			printf("root right data = %d\n", (*root)->right->data);
 
-			high->left = mid->right;
+			printf("high data = %d\t", high->data);
+			printf("high left data = %d\t", high->left->data);
+			printf("high right data = %d\t", high->right->data);
+
+			printf("mid data = %d\t", mid->data);
+			printf("mid left data = %d\t", mid->left->data);
+			printf("mid right data = %d\t", mid->right->data);
+
+			printf("low data = %d\t", low->data);
+			printf("low left data = %d\t", low->left->data);
+			printf("low right data = %d\t", low->right->data);
+
+			printf("root level = %d\t", (*root)->level);
+			printf("left level = %d\t", (*root)->left->level);
+			printf("right level = %d\n", (*root)->right->level);
+#endif
+
+			if(mid->right)
+				high->left = mid->right;
+			else
+				high->left = NULL;
+
 			high->level = high->level - factor;
 
-			*root = mid;
-			(*root)->right = high;
+			mid->right = high;
 
+			*root = mid;
+#if Debug_2
+			printf("LL rotation\n");
+			printf("root data = %d\t", (*root)->data);
+			printf("root left data = %d\t", (*root)->left->data);
+			printf("root right data = %d\t", (*root)->right->data);
+
+			printf("high data = %d\t", high->data);
+			printf("high left data = %d\t", high->left->data);
+			printf("high right data = %d\t", high->right->data);
+
+			printf("mid data = %d\t", mid->data);
+			printf("mid left data = %d\t", mid->left->data);
+			printf("mid right data = %d\t", mid->right->data);
+
+			printf("low data = %d\t", low->data);
+			printf("low left data = %d\t", low->left->data);
+			printf("low right data = %d\t", low->right->data);
+
+			printf("root level = %d\t", (*root)->level);
+			printf("left level = %d\t", (*root)->left->level);
+			printf("right level = %d\n", (*root)->right->level);
+#endif
+			update_level(&(*root)->left);
 			update_level(root);
 		}
 		//LR
 		else
 		{
+			high = *root;
+			mid = (*root)->left;
 			low = (*root)->left->right;
+#if Debug_2
+			printf("before LR rotation\n");
+			printf("root data = %d\t", (*root)->data);
+			printf("root left data = %d\t", (*root)->left->data);
+			printf("root right data = %d\n", (*root)->right->data);
 
-			mid->right = low->left;
+			printf("high data = %d\t", high->data);
+			printf("high left data = %d\t", high->left->data);
+			printf("high right data = %d\t", high->right->data);
 
-			low->left = mid;
+			printf("mid data = %d\t", mid->data);
+			printf("mid left data = %d\t", mid->left->data);
+			printf("mid right data = %d\t", mid->right->data);
+
+			printf("low data = %d\t", low->data);
+			printf("low left data = %d\t", low->left->data);
+			printf("low right data = %d\t", low->right->data);
+
+			printf("root level = %d\t", (*root)->level);
+			printf("left level = %d\t", (*root)->left->level);
+			printf("right level = %d\n", (*root)->right->level);
+#endif
+			if(low->left)
+				mid->right = low->left;
+			else
+				mid->right = NULL;
+
 			mid->level--;
 
-			(*root)->left = low;
+			low->left = mid;
 
+			(*root)->left = low;
+#if Debug_2
+			printf("LR rotation\n");
+			printf("root data = %d\t", (*root)->data);
+			printf("root left data = %d\t", (*root)->left->data);
+			printf("root right data = %d\t", (*root)->right->data);
+
+			printf("high data = %d\t", high->data);
+			printf("high left data = %d\t", high->left->data);
+			printf("high right data = %d\t", high->right->data);
+
+			printf("mid data = %d\t", mid->data);
+			printf("mid left data = %d\t", mid->left->data);
+			printf("mid right data = %d\t", mid->right->data);
+
+			printf("low data = %d\t", low->data);
+			printf("low left data = %d\t", low->left->data);
+			printf("low right data = %d\t", low->right->data);
+
+			printf("root level = %d\t", (*root)->level);
+			printf("left level = %d\t", (*root)->left->level);
+			printf("right level = %d\n", (*root)->right->level);
+#endif
 			rotation(factor, root, (*root)->left->left->data);
 		}
-	}
+	}*/
 }
 
 void adjust_balance(avl **root, int data)
@@ -259,10 +561,10 @@ void adjust_balance(avl **root, int data)
 	int factor = calc_balance_factor(root);
 	//printf("Node %d's balance factor = %d\n", (*root)->data, factor);
 
-	if(factor>=-1 && factor<=1)
-		return;
+	if(ABS(factor) > 1)
+		run_rotation(factor, root, data);
 	else
-		rotation(factor, root, data);
+		return;
 }
 
 void insert_avl(avl **root, int data)
@@ -293,7 +595,7 @@ int main(void)
     int i;
 
 #if Guide_Code
-    int data[511] = { 0 };
+    int data[1024] = { 0 };
     int len = sizeof(data) / sizeof(int);
 
 	srand(time(NULL));
@@ -308,8 +610,9 @@ int main(void)
 
 #else
 #if Debug
-	int data[3] = {34, 55, 57};
-	for(i = 0; i < 3; i++)
+	int data[] = {500, 50, 1000, 100, 25, 750, 1250, 75, 125, 37, 12, 625, 875, 1125, 1375, 6, 30, 40, 45};
+	int len = sizeof(data)/sizeof(int);
+	for(i = 0; i < len; i++)
 	{
 		insert_avl(&root, data[i]);
 	}
