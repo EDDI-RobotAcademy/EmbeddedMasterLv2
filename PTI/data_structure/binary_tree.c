@@ -112,6 +112,9 @@ int pop_data(stack **top)
 
 */
 
+
+
+
 void nr_print_tree(tree **root)
 {
 	tree **tmp = root;	// 실직적으로는 이것도 void* 타입으로 써야 의미가 통일 되긴 한다.
