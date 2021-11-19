@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define Guide_Code 1
-//#define nr_avl 1
+//#define Guide_Code 1
+#define nr_avl 1
 
 #define ABS(x) ((x > 0) ? (x) : -(x))
 
@@ -219,88 +219,109 @@ int decide_rotation(int factor, avl **root, int data)
 
 void RR_rotation(avl **root)
 {
-	avl *high, *mid, *low;
+	avl *top, *mid, *bot;
 
-	high = *root;
+	top = *root;
 	mid = (*root)->right;
-	low = (*root)->right->right;
+	bot = (*root)->right->right;
 
-	if(low->left)
-		high->right = low->left;
+	if(bot->left)
+		top->right = bot->left;
 	else
-		high->right = NULL;
+		top->right = NULL;
 
-	mid->left = high;
+	mid->left = top;
 	*root = mid;
 }
 
 void RL_rotation(avl **root)
 {
-	avl *high, *mid, *low;
+	avl *top, *mid, *bot;
 
-	high = *root;
+	top = *root;
 	mid = (*root)->right;
-	low = (*root)->right->left;
+	bot = (*root)->right->left;
 
-	if(low->right)
-		mid->left = low->right;
+	if(bot->right)
+		mid->left = bot->right;
 	else
 		mid->left = NULL;
 
 	mid->level--;
-	low->right = mid;
-	(*root)->right = low;
+	bot->right = mid;
+	(*root)->right = bot;
 }
 
 void LL_rotation(avl **root)
 {
+	printf("root = %d\t", (*root)->data);
+	printf("root left = %d\t", (*root)->left->data);
+	printf("root left left = %d\n", (*root)->left->left->data);
+	
 #if nr_avl
 	avl *grand_parent = NULL;
 
 	if((*root)->parent)
 		grand_parent = (*root)->parent;
-	else
-		grand_parent = *root;
 #endif
-	avl *high, *mid, *low;
+	avl *top, *mid, *bot;
 
-	high = *root;
+	top = *root;
 	mid = (*root)->left;
-	low = (*root)->left->left;
+	bot = (*root)->left->left;
 
 	if(mid->right)
-		high->left = mid->right;
+	{
+#if nr_avl
+		mid->right->parent = top;
+#endif
+		top->left = mid->right;
+	}
 	else
-		high->left = NULL;
-
-	mid->right = high;
-
-	*root = mid;
+		top->left = NULL;
 
 #if nr_avl
-	grand_parent->left = *root;
+	top->parent = mid;
+	mid->parent = (grand_parent) ? grand_parent : NULL;
 #endif
+	//mid->right = top;
+	*root = mid;
+	(*root)->right = top;
+	(*root)->left = bot;
+#if nr_avl
+	if(grand_parent)
+		grand_parent->left = *root;
+#endif
+
 }
 
 void LR_rotation(avl **root)
 {
-	avl *high, *mid, *low;
+	avl *top, *mid, *bot;
 
-	high = *root;
+	top = *root;
 	mid = (*root)->left;
-	low = (*root)->left->right;
+	bot = (*root)->left->right;
 
-	if(low->left)
-		mid->right = low->left;
+	if(bot->left)
+	{
+#if nr_avl
+		bot->left->parent = mid;
+#endif
+		mid->right = bot->left;
+	}
 	else
 		mid->right = NULL;
 
 	mid->level--;
-	low->left = mid;
-	(*root)->left = low;
 #if nr_avl
-	LL_rotation(root);
+	mid->parent = bot;
 #endif
+	bot->left = mid;
+#if nr_avl
+	bot->parent = (*root);
+#endif
+	(*root)->left = bot;
 }
 
 #if nr_avl
@@ -311,8 +332,6 @@ void nr_run_rotation(int factor, avl **root, int data)
 
 	if((*root)->parent)
 		grand_parent = &(*root)->parent;
-	else
-		grand_parent = root;
 
 	switch(dir_rot)
 	{
@@ -327,11 +346,15 @@ void nr_run_rotation(int factor, avl **root, int data)
 		case LL:
 			printf("LL rotation\n");
 			LL_rotation(root);
+			(*grand_parent)->right->level = (*grand_parent)->right->level - factor;
+			update_level(&(*grand_parent)->left);
+			update_level(grand_parent);
 			break;
 
 		case LR:
 			printf("LR rotation\n");
 			LR_rotation(root);
+			LL_rotation(root);
 			(*grand_parent)->left->right->level = (*grand_parent)->left->right->level - factor;
 			update_level(&(*grand_parent)->left);
 			update_level(grand_parent);
@@ -451,10 +474,7 @@ void nr_insert_avl(avl **root, int data)
 
 	*loop = create_avl_node();
 	(*loop)->data = data;
-	if(parent)
-		(*loop)->parent = parent;
-	else
-		(*loop)->parent = NULL;
+	(*loop)->parent = parent;
 	(*loop)->level = 1;
 
 	nr_update_level(root, data);
@@ -486,8 +506,8 @@ int main(void)
     }
 
 #else
-	//int data[] = {500, 50, 1000, 100, 25, 750, 1250, 75, 125, 37, 12, 625, 875, 1125, 1375, 6, 30, 40, 45};
-	int data[3] = {30, 20, 10};
+	int data[] = {500, 50, 1000, 100, 25, 750, 1250, 75, 125, 37, 12, 625, 875, 1125, 1375, 6, 30, 40, 45};
+	//int data[3] = {30, 20, 10};
 	int len = sizeof(data)/sizeof(int);
 	for(i = 0; i < len; i++)
 	{
