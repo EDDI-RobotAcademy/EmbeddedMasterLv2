@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define Guide_Code 1
+//#define Guide_Code 1
 //#define old 0
 //#define new 1
 
@@ -386,31 +386,6 @@ void adjust_balance(avl **root, int data)
 	}
 }
 
-/*#if new
-void adjust_balance(avl **root, int data)
-{
-	avl *loop = NULL;
-	avl **backup;
-	int factor = 0;
-
-	backup = find_tree_data(root, data);
-	loop = (*backup)->parent;
-
-	while(loop)
-	{
-		printf("loop = %d\n", loop->data);
-		factor = calc_balance_factor(backup);
-		if(ABS(factor) > 1)
-		{
-			printf("unbalanced node = %d\n", loop->data);
-			nr_run_rotation(factor, root, backup, data);
-		}
-		backup = &loop->parent;
-		loop = *backup;
-	}
-}
-#endif*/
-
 void nr_insert_avl(avl **root, int data)
 {
 	avl **loop = root;
@@ -434,7 +409,71 @@ void nr_insert_avl(avl **root, int data)
 
 	nr_update_level(root, data);
 	adjust_balance(root, data);
-	//print_avl(*root);
+}
+
+avl *chg_avl_node(avl *root)
+{
+	avl *tmp = root;
+
+	if(!root->right)
+	{
+		root->left->parent = root->parent;
+		root = root->left;
+	}
+	else if(!root->left)
+	{
+		root->right->parent = root->parent;
+		root = root->right;
+	}
+
+	free(tmp);
+
+	return root;
+}
+
+avl *find_max(avl **root)
+{
+	while(*root)
+	{
+		if((*root)->right)
+			root = &(*root)->right;
+		else
+		{
+			return *root;
+		}
+	}
+}
+
+void nr_avl_delete_node(avl **root, int data)
+{
+	avl **del_node;
+	int left_max;
+	//int right_min;
+	avl *parent;
+
+	del_node = find_tree_data(root, data);
+	parent = (*del_node)->parent;
+
+	if((*del_node)->left && (*del_node)->right)
+	{
+		find_max(&(*del_node)->left);
+		(*del_node)->data = left_max;
+	}
+	else if(!(*del_node)->left && !(*del_node)->right)
+	{
+		(*del_node)->parent = NULL;
+
+		free(*del_node);
+
+		if(parent->data < data)
+			parent->right = NULL;
+		else if(parent->data > data)
+			parent->left = NULL;
+	}
+	else
+	{
+		*del_node = chg_avl_node(*del_node);
+	}
 }
 
 int main(void)
@@ -457,9 +496,9 @@ int main(void)
     }
 #else
 	//int data[] = {500, 50, 1000, 100, 25, 750, 1250, 75, 125, 37, 12, 625, 875, 1125, 1375, 6, 30, 40, 45};
-	//int data[] = {72, 194, 173, 161, 133, 158, 200};
+	int data[] = {72, 194, 173, 161, 133, 158, 200};
 	//int data[] = {72, 194, 173};
-	int data[] = {173, 133, 194, 72, 161, 158, 200};
+	//int data[] = {173, 133, 194, 72, 161, 158, 200};
 	int len = sizeof(data)/sizeof(int);
 	for(i = 0; i < len; i++)
 	{
@@ -467,6 +506,12 @@ int main(void)
 	}
 #endif
 
+	print_avl(root);
+
+	printf("delete node\n");
+	//Delete Tree node
+	//nr_avl_delete_node(&root, 72);
+	nr_avl_delete_node(&root, 161);
 	print_avl(root);
 
     return 0;
