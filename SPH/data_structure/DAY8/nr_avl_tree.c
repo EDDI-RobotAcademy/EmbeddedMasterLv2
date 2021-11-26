@@ -4,8 +4,6 @@
 #include <stdbool.h>
 
 //#define Guide_Code 1
-//#define old 0
-//#define new 1
 
 #define ABS(x) ((x > 0) ? (x) : -(x))
 
@@ -276,6 +274,9 @@ void RL_rotation(avl **root, avl **cursor)
 
 void LL_rotation(avl **root, avl **cursor)
 {
+	printf("root = %d\n", (*root)->data);
+	printf("cursor = %d\n", (*cursor)->data);
+
 	avl *top, *mid, *bot;
 	avl *grand_parent = (*cursor)->parent;
 
@@ -373,13 +374,13 @@ void adjust_balance(avl **root, int data)
 
 	while(*loop)
 	{
-		printf("loop = %d\n", (*loop)->data);
+		//printf("loop = %d\n", (*loop)->data);
 		factor = calc_balance_factor(loop);
 		if(ABS(factor) > 1)
 		{
 			printf("unbalanced node = %d\n", (*loop)->data);
 			nr_run_rotation(factor, root, loop, data);
-			printf("root = %d\n", (*root)->data);
+			//printf("root = %d\n", (*root)->data);
 			break;
 		}
 		loop = &(*loop)->parent;
@@ -415,64 +416,175 @@ avl *chg_avl_node(avl *root)
 {
 	avl *tmp = root;
 
-	if(!root->right)
+	if(root->left)
 	{
 		root->left->parent = root->parent;
 		root = root->left;
 	}
-	else if(!root->left)
+	else if(root->right)
 	{
 		root->right->parent = root->parent;
 		root = root->right;
 	}
+	else
+		root = NULL;
 
 	free(tmp);
 
 	return root;
 }
 
-avl *find_max(avl **root)
+avl **find_max(avl **cursor)
 {
-	while(*root)
+	while(*cursor)
 	{
-		if((*root)->right)
-			root = &(*root)->right;
+		if((*cursor)->right)
+			cursor = &(*cursor)->right;
 		else
 		{
-			return *root;
+			return cursor;
 		}
+	}
+}
+
+void nr_re_balance(avl **root, avl **cursor)
+{
+	int factor;
+
+	factor = calc_balance_factor(cursor);
+
+	if(ABS(factor) <= 1)
+		return;
+
+	if(factor < 0)
+	{
+		if((*cursor)->right->right)
+			adjust_balance(root, (*cursor)->right->right->data);
+		else
+			adjust_balance(root, (*cursor)->right->left->data);
+	}
+	else
+	{
+		if((*cursor)->left->left)
+			adjust_balance(root, (*cursor)->left->left->data);
+		else
+			adjust_balance(root, (*cursor)->left->right->data);
 	}
 }
 
 void nr_avl_delete_node(avl **root, int data)
 {
 	avl **del_node;
-	int left_max;
-	//int right_min;
+	avl **left_max;
 	avl *parent;
+	int factor;
 
 	del_node = find_tree_data(root, data);
 	parent = (*del_node)->parent;
 
+	if(del_node == NULL)
+	{
+		printf("tree has no data\n");
+		return;
+	}
+
 	if((*del_node)->left && (*del_node)->right)
 	{
-		find_max(&(*del_node)->left);
-		(*del_node)->data = left_max;
+		avl *max_parent;
+		left_max = find_max(&(*del_node)->left);
+		max_parent = (*left_max)->parent;
+		(*del_node)->data = (*left_max)->data;
+
+		*left_max = chg_avl_node(*left_max);
+		update_level(&max_parent);
+		nr_re_balance(root, &max_parent);
 	}
 	else if(!(*del_node)->left && !(*del_node)->right)
 	{
-		(*del_node)->parent = NULL;
-
-		free(*del_node);
-
-		if(parent->data < data)
-			parent->right = NULL;
-		else if(parent->data > data)
-			parent->left = NULL;
+		if(!parent)
+		{
+			*root = chg_avl_node(*del_node);
+			return;
+		}
+		else
+		{
+			if(parent->data < data)
+				parent->right = chg_avl_node(*del_node);
+			else 
+				parent->left = chg_avl_node(*del_node);
+			*del_node = NULL;
+		}
 	}
 	else
 	{
 		*del_node = chg_avl_node(*del_node);
+	}
+
+	if(*del_node)
+		update_level(del_node);
+
+	update_level(&parent);
+	nr_re_balance(root, &parent);
+
+	update_level(root);
+	nr_re_balance(root, root);
+}
+
+int set_del_data_num(int len)
+{
+	int num;
+	int i;
+
+	reassin:
+	num = rand() % len + 1;
+
+	if(ABS(num) > len)
+		goto reassin;
+	else
+		return num;
+}
+
+void get_rand_idx(int *arr, int len)
+{
+	int i, j;
+	int idx;
+
+	for(i = 0; i < len; i++)
+	{
+		reassign:
+		idx = rand() % len;
+		printf("idx = %d\n", idx);
+		arr[i] = idx;
+
+		for(j = 0; j < i; j++)
+		{
+			if(arr[i] == arr[j])
+				goto reassign;
+		}
+	}
+}
+
+void random_del_node(avl **root, int *data, int len)
+{
+	int rand_idx = 0;
+	int del_data_num = 0;
+	int i;
+
+	srand(time(NULL));
+
+	del_data_num = set_del_data_num(len);
+	printf("del_data_num = %d\n", del_data_num);
+
+	int *idx = (int *)malloc(sizeof(int) * del_data_num);
+	get_rand_idx(idx, del_data_num);
+
+	for(i = 0; i < del_data_num; i++)
+	{
+		printf("delete data = %d\n", data[idx[i]]);
+
+		nr_avl_delete_node(root, data[idx[i]]);
+
+		print_avl(*root);
 	}
 }
 
@@ -496,9 +608,11 @@ int main(void)
     }
 #else
 	//int data[] = {500, 50, 1000, 100, 25, 750, 1250, 75, 125, 37, 12, 625, 875, 1125, 1375, 6, 30, 40, 45};
-	int data[] = {72, 194, 173, 161, 133, 158, 200};
-	//int data[] = {72, 194, 173};
+	//int data[] = {72, 194, 173, 161, 133, 158, 200};
 	//int data[] = {173, 133, 194, 72, 161, 158, 200};
+	//int data[] = {80, 45, 200, 40, 50, 176, 280, 32, 44, 49, 55, 150, 180, 277, 290, 31, 33, 43, 47, 54, 149, 179, 275, 285, 29};
+	int data[] = {55, 32, 60, 31, 40, 58, 65, 29};
+	//int data[] = {55, 31, 29};
 	int len = sizeof(data)/sizeof(int);
 	for(i = 0; i < len; i++)
 	{
@@ -509,10 +623,13 @@ int main(void)
 	print_avl(root);
 
 	printf("delete node\n");
-	//Delete Tree node
-	//nr_avl_delete_node(&root, 72);
-	nr_avl_delete_node(&root, 161);
-	print_avl(root);
+	//nr_avl_delete_node(&root, 173);
+	//nr_avl_delete_node(&root, 200);
+	//nr_avl_delete_node(&root, 194);
+	//nr_avl_delete_node(&root, 45);
+	//nr_avl_delete_node(&root, 40);
+	//print_avl(root);
+	random_del_node(&root, data, len);
 
     return 0;
 }
