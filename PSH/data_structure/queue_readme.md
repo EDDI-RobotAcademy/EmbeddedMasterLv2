@@ -1,3 +1,0 @@
-### 질문 ###
---- 
--.dequeue_data_idx 진행시  Segmentation fault (core dumped) 에러 발생...  

@@ -79,6 +79,7 @@ avl *create_avl_node(void)
 
 void update_level(avl **root)
 {
+
 }
 
 void rotation(int factor, avl **root, int data)
