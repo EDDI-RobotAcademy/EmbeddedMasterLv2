@@ -4,9 +4,12 @@
 #include <stdbool.h>
 #include <assert.h>
 
+/*loop가 회전시 변경되면서 밸런싱을 놓치는 경우가 발생*/
+/*LL, LR 또는 RR, RL이 연속으로 2회 초과하여 발생하는 경우*/
 #define Guide_Code 1
 //#define old 0
 #define new 1
+//#define delete 1
 
 #define ABS(x) ((x > 0) ? (x) : -(x))
 
@@ -230,7 +233,7 @@ void RR_rotation(avl **root, avl **cursor)
 
 	mid->parent = grand_parent;
 
-#if old
+#ifdef old
 	if(!grand_parent)
 	{
 		*root = mid;
@@ -245,7 +248,7 @@ void RR_rotation(avl **root, avl **cursor)
 	}
 #endif
 
-#if new
+#ifdef new
 	if(!grand_parent)
 		*root = mid;
 	else if(grand_parent->left == top)
@@ -269,7 +272,7 @@ void RR_rotation(avl **root, avl **cursor)
 		update_level(&grand_parent);
 }
 
-#if old
+#ifdef old
 void RL_rotation(avl **root, avl **cursor)
 {
 	avl *top, *mid, *bot;
@@ -278,7 +281,7 @@ void RL_rotation(avl **root, avl **cursor)
 	mid = top->right;
 	bot = mid->left;
 
-	bot->parent = top;
+	bot->parent = *cursor;
 	mid->parent = bot;
 
 	if(bot->right)
@@ -293,13 +296,11 @@ void RL_rotation(avl **root, avl **cursor)
 	update_level(&mid);
 	update_level(&bot);
 
-	cursor = &bot->parent;
-
-	RR_rotation(root, cursor);
+	RR_rotation(root, &bot->parent);
 }
 #endif
 
-#if new
+#ifdef new
 void RL_rotation(avl **root, avl **cursor)
 {
 	printf("cursor = %d\n", (*cursor)->data);
@@ -353,7 +354,7 @@ void LL_rotation(avl **root, avl **cursor)
 
 	mid->parent = grand_parent;
 
-#if old
+#ifdef old
 	if(!grand_parent)
 	{
 		*root = mid;
@@ -368,7 +369,7 @@ void LL_rotation(avl **root, avl **cursor)
 	}
 #endif
 
-#if new
+#ifdef new
 	if(!grand_parent)
 		*root = mid;
 	else if(grand_parent->left == top)
@@ -393,7 +394,7 @@ void LL_rotation(avl **root, avl **cursor)
 		update_level(&grand_parent);
 }
 
-#if old
+#ifdef old
 void LR_rotation(avl **root, avl **cursor)
 {
 	avl *top, *mid, *bot;
@@ -402,14 +403,13 @@ void LR_rotation(avl **root, avl **cursor)
 	mid = top->left;
 	bot = mid->right;
 
-	bot->parent = top;
+	bot->parent = *cursor;
 	mid->parent = bot;
 
 	if(bot->left)
 		bot->left->parent = mid;
 
-	mid->right = (bot->left) ? bot->left : NULL;
-	//mid->right = bot->left;
+	mid->right = bot->left;
 
 	bot->left = mid;
 	top->left = bot;
@@ -418,13 +418,11 @@ void LR_rotation(avl **root, avl **cursor)
 	update_level(&mid);
 	update_level(&bot);
 
-	cursor = &bot->parent;
-
-	LL_rotation(root, cursor);
+	LL_rotation(root, &bot->parent);
 }
 #endif
 
-#if new
+#ifdef new
 void LR_rotation(avl **root, avl **cursor)
 {
 	printf("cursor = %d\n", (*cursor)->data);
@@ -442,7 +440,6 @@ void LR_rotation(avl **root, avl **cursor)
 
 	grand_parent = (*cursor)->parent;
 	//assert(grand_parent != NULL);
-
 
 	bot->parent = grand_parent;
 
@@ -474,6 +471,7 @@ void LR_rotation(avl **root, avl **cursor)
 		update_level(&grand_parent);
 }
 #endif
+
 void nr_run_rotation(int factor, avl **root, avl **cursor, int data)
 {
 	int dir_rot = decide_rotation(factor, cursor, data);
@@ -502,7 +500,7 @@ void nr_run_rotation(int factor, avl **root, avl **cursor, int data)
 	}
 }
 
-#if old
+#ifdef old
 void adjust_balance(avl **root, int data)
 {
 	avl **loop = NULL;
@@ -512,15 +510,11 @@ void adjust_balance(avl **root, int data)
 
 	while(*loop)
 	{
-		printf("loop = %d\n", (*loop)->data);
 		factor = calc_balance_factor(loop);
 		if(ABS(factor) > 1)
 		{
 			printf("unbalanced node = %d\n", (*loop)->data);
-			printf("root = %d\n", (*root)->data);
 			nr_run_rotation(factor, root, loop, data);
-			printf("after rotation root = %d\n", (*root)->data);
-			//print_avl(*root);
 			break;
 		}
 		loop = &(*loop)->parent;
@@ -528,7 +522,7 @@ void adjust_balance(avl **root, int data)
 }
 #endif
 
-#if new
+#ifdef new
 void adjust_balance(avl **root, int data)
 {
 	avl *loop = NULL;
@@ -538,9 +532,8 @@ void adjust_balance(avl **root, int data)
 
 	while(loop)
 	{
-		printf("loop = %d\n", loop->data);
 		factor = calc_balance_factor(&loop);
-		if(ABS(factor) == 2)
+		if(ABS(factor) > 1)
 		{
 			printf("unbalanced node = %d\n", loop->data);
 			printf("root = %d\n", (*root)->data);
@@ -772,8 +765,8 @@ int main(void)
     avl *root = NULL;
     int i;
 
-#if Guide_Code
-    int data[500];
+#ifdef Guide_Code
+    int data[10000];
     int len = sizeof(data) / sizeof(int);
 
 	srand(time(NULL));
@@ -784,6 +777,7 @@ int main(void)
     for (i = 0; i < len; i++)
     {
 		nr_insert_avl(&root, data[i]);
+		//print_avl(root);
     }
 #else
 	int data[] = {500, 50, 1000, 100, 25, 750, 1250, 75, 125, 37, 12, 625, 875, 1125, 1375, 6, 30, 40, 45};
@@ -803,6 +797,7 @@ int main(void)
 	printf("insert clear!\n");
 	print_avl(root);
 
+#ifdef delete
 	printf("\ndelete node\n");
 	//nr_avl_delete_node(&root, 173);
 	//nr_avl_delete_node(&root, 200);
@@ -813,6 +808,7 @@ int main(void)
 	random_del_node(&root, data, len);
 	printf("delete clear!\n");
 	print_avl(root);
+#endif
 
     return 0;
 }

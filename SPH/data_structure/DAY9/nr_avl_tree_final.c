@@ -5,8 +5,8 @@
 #include <assert.h>
 
 #define Guide_Code 1
-//#define old 0
-#define new 1
+#define old 0
+//#define new 1
 #define delete 1
 
 #define ABS(x) ((x > 0) ? (x) : -(x))
@@ -271,9 +271,7 @@ void RL_rotation(avl **root, avl **cursor)
 	update_level(&mid);
 	update_level(&bot);
 
-	cursor = &bot->parent;
-
-	RR_rotation(root, cursor);
+	RR_rotation(root, &bot->parent);
 }
 #endif
 
@@ -394,9 +392,7 @@ void LR_rotation(avl **root, avl **cursor)
 	update_level(&mid);
 	update_level(&bot);
 
-	cursor = &bot->parent;
-
-	LL_rotation(root, cursor);
+	LL_rotation(root, &bot->parent);
 }
 #endif
 
