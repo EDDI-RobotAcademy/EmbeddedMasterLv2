@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <assert.h>
 
-#define Guide_Code 1
-#define old 0
+//#define Guide_Code 1
+//#define old 0
 //#define new 1
 //#define delete 1
 
@@ -182,7 +182,6 @@ void left_rotation(rb **root)
 	//조부모가 NULL == 부모가 root라면
 	if(!grand_parent)
 	{
-		parent = me;
 		parent->color= black;
 		me->color= black;
 		child->color= black;
@@ -219,7 +218,6 @@ void right_rotation(rb **root)
 	//조부모가 NULL == 부모가 root라면
 	if(!grand_parent)
 	{
-		parent = me;
 		parent->color= black;
 		me->color= black;
 		child->color= black;
@@ -249,7 +247,7 @@ void re_struct_tree(rb **root, rb **brother, rb **child)
 			assert((*child) != NULL);
 
 			(*child)->parent = parent;
-			parent = *child;
+			tmp->parent = *child;
 
 			if((*child)->right)
 				(*child)->right->parent = tmp;
@@ -278,7 +276,7 @@ void re_struct_tree(rb **root, rb **brother, rb **child)
 			assert((*child) != NULL);
 
 			(*child)->parent = parent;
-			parent = *child;
+			tmp->parent = *child;
 
 			if((*child)->left)
 				(*child)->left->parent = tmp;
@@ -333,7 +331,6 @@ rb *find_child(rb **root)
 	return child;
 }
 
-#ifdef old
 void chk_rb_balance(rb **root) 
 {
 	rb *child;
@@ -344,15 +341,10 @@ void chk_rb_balance(rb **root)
 
 	if(!child)
 		return;
+	if(!(*root)->parent)
+		return;
 	parent = (*root)->parent;
 	brother = (parent->data > (*root)->data) ? parent->right : parent->left;
-
-#if 0
-	if(brother->color == black)
-		printf("node %d's brother %d's color is black\n", (*root)->data, brother->data);
-	else
-		printf("node %d's brother %d's color is red\n", (*root)->data, brother->data);
-#endif
 
 	bool res_double_red;
 	res_double_red = chk_double_red(root, &child);
@@ -365,12 +357,14 @@ void chk_rb_balance(rb **root)
 			{
 				printf("resturct!\n");
 				re_struct_tree(root, &brother, &child);
+				printf("clear restruct!\n");
 			}
 
 			if(brother && brother->color == red)
 			{
 				printf("re-color!\n");
 				re_color_tree(root, &brother, &child);
+				printf("clear re-color\n");
 			}
 			break;
 		case false:
@@ -378,7 +372,6 @@ void chk_rb_balance(rb **root)
 			return;
 	}
 }
-#endif
 
 void insert_rb_data(rb **root, rb *parent, int data)
 {
@@ -398,26 +391,19 @@ void insert_rb_data(rb **root, rb *parent, int data)
 	if((*root)->data > data)
 	{
 		insert_rb_data(&(*root)->left, backup_papa, data);
-#ifdef old
-		*root = (*root)->left;
-#endif
 	}
 	else if((*root)->data < data)
 	{
 		insert_rb_data(&(*root)->right, backup_papa, data);
-#ifdef old
-		*root = (*root)->right;
-#endif
 	}
 
-#ifdef old
 	chk_rb_balance(root);
 
-	if(!(*root)->parent)
+	/*if(!(*root)->parent)
 		return;
 	else
 		*root = (*root)->parent;
-#endif
+		*/
 }
 
 int set_del_data_num(int len)
@@ -507,7 +493,7 @@ int main(void)
 	//int data[] = {55, 31, 29};
 
 	//simple LL case
-	//int data[] = {500, 300, 200}
+	//int data[] = {500, 300, 200};
 	//simple LR case
 	//int data[] = {500, 300, 400};
 	//simple RR case
