@@ -5,8 +5,8 @@
 #include <assert.h>
 
 //#define Guide_Code 1
-//#define old 0
-#define new 1
+#define old 0
+//#define new 1
 //#define delete 1
 
 #define ABS(x) ((x > 0) ? (x) : -(x))
@@ -89,10 +89,12 @@ void print_rb(rb *tree)
 
     if (tmp)
     {
+		assert(tmp->left != NULL);
         print_rb(tmp->left);
 
         printf("data = %4d\t", tmp->data);
 
+		assert(tmp->parent != NULL);
 		if(tmp->parent)
 			printf("parent = %4d\t", tmp->parent->data);
 		else
@@ -121,6 +123,7 @@ void print_rb(rb *tree)
 		else
 			printf("color = black\n");
 
+		assert(tmp->left != NULL);
         print_rb(tmp->right);
     }
 }
@@ -483,9 +486,13 @@ rb *find_child(rb **root)
 #ifdef old
 void chk_rb_balance(rb **root) 
 {
+	printf("chk rb balance start root = %d\n", (*root)->data);
 	rb *child;
 	rb *brother;
 	rb *parent;
+
+	if((*root)->parent == NULL)
+		return;
 
 	child = find_child(root);
 
@@ -587,18 +594,27 @@ void insert_rb_data(rb **root, rb *parent, int data)
 	if((*root)->data > data)
 	{
 		insert_rb_data(&(*root)->left, backup_papa, data);
+		*root = (*root)->left;
+		if((*root)->left && (*root)->right)
+			printf("root = %d\tleft = %d\tright = %d\n", (*root)->data, (*root)->left->data, (*root)->right->data);
 	}
 	else if((*root)->data < data)
 	{
 		insert_rb_data(&(*root)->right, backup_papa, data);
+		*root = (*root)->right;
 	}
 
 	chk_rb_balance(root);
 
+	printf("chk balance clear!\n");
+	//if((*root)->parent)
+		//printf("after chk balance root = %d\t parent = %d\n", (*root)->data, (*root)->parent->data);
 	if(!(*root)->parent)
 		return;
 	*root = (*root)->parent;
-		
+
+	if((*root)->parent && (*root)->left && (*root)->right)
+		printf("after change root, root = %d\tleft = %d\t right = %d\t parent = %d\n", (*root)->data, (*root)->left->data, (*root)->right->data, (*root)->parent->data);
 }
 #endif
 
@@ -742,11 +758,15 @@ int main(void)
 #ifdef new
 		insert_rb_data(&root, &root, NULL, data[i]);
 #endif
-		print_rb(root);
+		//print_rb(root);
 	}
 #endif
 
 	printf("insert clear!\n");
+	printf("after change root, root = %d\tleft = %d\t right = %d\n", root->data, root->left->data, root->right->data);
+	assert(root != NULL);
+	assert(root->left != NULL);
+	assert(root->right != NULL);
 	print_rb(root);
 
 #ifdef delete
