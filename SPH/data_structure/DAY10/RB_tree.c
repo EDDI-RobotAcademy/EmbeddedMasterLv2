@@ -156,50 +156,12 @@ rb **find_tree_data(rb **root, int data)
 
 bool chk_double_red(rb **root, rb **child)
 {
-	if((*root)->color== red && (*child)->color == red)
+	if((*root)->color == red && (*child)->color == red)
 		return true;
 	else
 		return false;
 }
 
-#ifdef old
-void left_rotation(rb **root)
-{
-	rb *parent = (*root)->parent;
-	rb *me = *root;
-	rb *child = (*root)->right;
-	rb *grand_parent = parent->parent;
-
-	//printf("grand_parent = %d\tparent = %d\tme = %d\tchild = %d\n", grand_parent->data, parent->data, me->data, child->data);
-	me->parent = grand_parent;
-	parent->parent = me;
-
-	if(me->left)
-		me->left->parent = parent;
-	parent->right = me->left;
-
-	me->left = parent;
-
-	//조부모가 NULL == 부모가 root라면
-	if(!grand_parent)
-	{
-		parent->color= black;
-		me->color= black;
-		child->color= black;
-	}
-	else
-	{
-		if(grand_parent->data > me->data)
-			grand_parent->left = me;
-		else
-			grand_parent->right = me;
-
-		child->color= black;
-	}
-}
-#endif
-
-#ifdef new
 void left_rotation(rb **top_root, rb **root)
 {
 	rb *parent = (*root)->parent;
@@ -235,46 +197,7 @@ void left_rotation(rb **top_root, rb **root)
 		child->color= black;
 	}
 }
-#endif
 
-#ifdef old
-void right_rotation(rb **root)
-{
-	rb *parent = (*root)->parent;
-	rb *me = *root;
-	rb *child = (*root)->left;
-	rb *grand_parent = (!parent->parent) ? NULL : parent->parent;
-
-	//printf("grand_parent = %d\tparent = %d\tme = %d\tchild = %d\n", grand_parent->data, parent->data, me->data, child->data);
-
-	me->parent = grand_parent;
-	parent->parent = me;
-
-	if(me->right)
-		me->right->parent = parent;
-	parent->left = me->right;
-
-	me->right = parent;
-
-	//조부모가 NULL == 부모가 root라면
-	if(!grand_parent)
-	{
-		parent->color= black;
-		me->color= black;
-		child->color= black;
-	}
-	else
-	{
-		if(grand_parent->data > me->data)
-			grand_parent->left = me;
-		else
-			grand_parent->right = me;
-		child->color= black;
-	}
-}
-#endif
-
-#ifdef new
 void right_rotation(rb **top_root, rb **root)
 {
 	rb *parent = (*root)->parent;
@@ -310,76 +233,7 @@ void right_rotation(rb **top_root, rb **root)
 		child->color= black;
 	}
 }
-#endif
 
-#ifdef old
-void re_struct_tree(rb **root, rb **brother, rb **child)
-{
-	rb *tmp = *root;
-	rb *parent = (*root)->parent;
-
-	//RR, RL case
-	if((*root)->data > parent->data)
-	{
-		if((*child)->data < (*root)->data)
-		{
-			printf("RL case\n");
-
-			assert((*child) != NULL);
-
-			(*child)->parent = parent;
-			tmp->parent = *child;
-
-			if((*child)->right)
-				(*child)->right->parent = tmp;
-			tmp->left = (*child)->right;
-
-			(*child)->right = tmp;
-			*root = *child;
-
-			left_rotation(child);
-			printf("RL rotation clear\n");
-		}
-		else
-		{
-			printf("RR case\n");
-			left_rotation(root);
-			printf("RR rotation clear\n");
-		}
-	}
-	//LL, LR case
-	else
-	{
-		if((*child)->data > (*root)->data)
-		{
-			printf("LR case\n");
-
-			assert((*child) != NULL);
-
-			(*child)->parent = parent;
-			tmp->parent = *child;
-
-			if((*child)->left)
-				(*child)->left->parent = tmp;
-			tmp->right = (*child)->left;
-
-			(*child)->left = tmp;
-			*root = *child;
-
-			right_rotation(child);
-			printf("LR rotation clear\n");
-		}
-		else
-		{
-			printf("LL case\n");
-			right_rotation(root);
-			printf("LL rotation clear\n");
-		}
-	}
-}
-#endif
-
-#ifdef new
 void re_struct_tree(rb **top_root, rb **root, rb **brother, rb **child)
 {
 	rb *tmp = *root;
@@ -444,7 +298,6 @@ void re_struct_tree(rb **top_root, rb **root, rb **brother, rb **child)
 		}
 	}
 }
-#endif
 
 void re_color_tree(rb **root, rb **brother, rb **child)
 {
@@ -464,10 +317,11 @@ void re_color_tree(rb **root, rb **brother, rb **child)
 	}
 }
 
-rb *find_child(rb **root)
+rb *find_adjacent_child(rb **root)
 {
 	rb *child;
 
+#if 1
 	if(!(*root)->left && !(*root)->right)
 		return NULL;
 	else if(!(*root)->left)
@@ -475,74 +329,48 @@ rb *find_child(rb **root)
 	else if(!(*root)->right)
 		child = (*root)->left;
 	else
-		child = ((*root)->left->color== black) ? (*root)->right : (*root)->left;
+		child = ((*root)->left->color == black) ? (*root)->right : (*root)->left;
+#endif
+
+#if 0
+	if(!(*root)->left && !(*root)->right)
+		return NULL;
+
+	if((*root)->left->color == (*root)->color)
+		child = (*root)->left;
+	else
+		child = (*root)->right;
+#endif
 
 	return child;
 }
 
-#ifdef old
-void chk_rb_balance(rb **root) 
-{
-	rb *child;
-	rb *brother;
-	rb *parent;
-
-	child = find_child(root);
-
-	if(!child)
-		return;
-	if(!(*root)->parent)
-		return;
-	parent = (*root)->parent;
-	brother = (parent->data > (*root)->data) ? parent->right : parent->left;
-
-	bool res_double_red;
-	res_double_red = chk_double_red(root, &child);
-
-	switch(res_double_red)
-	{
-		case true:
-			printf("double red detected on %d nodes\n", (*root)->data);
-			if(!brother || brother->color == black)
-			{
-				printf("resturct!\n");
-				re_struct_tree(root, &brother, &child);
-				printf("clear restruct!\n");
-			}
-
-			if(brother && brother->color == red)
-			{
-				printf("re-color!\n");
-				re_color_tree(root, &brother, &child);
-				printf("clear re-color\n");
-			}
-			break;
-		case false:
-			printf("double red undetected!\n");
-			return;
-	}
-}
-#endif
-
-#ifdef new
 void chk_rb_balance(rb **top_root, rb **root) 
 {
 	rb *child;
 	rb *brother;
 	rb *parent;
 
-	child = find_child(root);
+#if 1
+	child = find_adjacent_child(root);
+#endif
 
-	if(!child)
+#if 0
+	child = find_adjacent_child(root);
+#endif
+
+	if(!child || !(*root)->parent)
 		return;
-	if(!(*root)->parent)
-		return;
+
 	parent = (*root)->parent;
 	brother = (parent->data > (*root)->data) ? parent->right : parent->left;
 
+#if 1
 	bool res_double_red;
 	res_double_red = chk_double_red(root, &child);
+#endif
 
+#if 1
 	switch(res_double_red)
 	{
 		case true:
@@ -565,44 +393,34 @@ void chk_rb_balance(rb **top_root, rb **root)
 			printf("double red undetected!\n");
 			return;
 	}
-}
 #endif
 
-#ifdef old
-void insert_rb_data(rb **root, rb *parent, int data)
-{
-	rb *backup_papa;
-
-	if(!(*root))
+#if 0
+	switch(child->color)
 	{
-		*root = create_rb_node();
-		(*root)->data = data;
-		(*root)->parent = parent;
-		(*root)->color = (!parent) ? black : red;
-		return;
+		case red:
+			printf("adjacent node detected on %d nodes\n", (*root)->data);
+			if(!brother || brother->color == black)
+			{
+				printf("resturct!\n");
+				re_struct_tree(top_root, root, &brother, &child);
+				printf("clear restruct!\n");
+			}
+
+			if(brother && brother->color == red)
+			{
+				printf("re-color!\n");
+				re_color_tree(root, &brother, &child);
+				printf("clear re-color\n");
+			}
+			break;
+		case black:
+			printf("adjacent node undetected\n");
+			break;
 	}
-
-	backup_papa = *root;
-
-	if((*root)->data > data)
-	{
-		insert_rb_data(&(*root)->left, backup_papa, data);
-	}
-	else if((*root)->data < data)
-	{
-		insert_rb_data(&(*root)->right, backup_papa, data);
-	}
-
-	chk_rb_balance(root);
-
-	if(!(*root)->parent)
-		return;
-	*root = (*root)->parent;
-		
-}
 #endif
+}
 
-#ifdef new
 void insert_rb_data(rb **top_root, rb **root, rb *parent, int data)
 {
 	rb *backup_papa;
@@ -629,7 +447,6 @@ void insert_rb_data(rb **top_root, rb **root, rb *parent, int data)
 
 	chk_rb_balance(top_root, root);
 }
-#endif
 
 int set_del_data_num(int len)
 {
