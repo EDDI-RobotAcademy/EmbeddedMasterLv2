@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define BUF_SIZ		50	
+#define BUF_SIZ		10	
 
 typedef struct _ringQ {
 	int buf[BUF_SIZ];
