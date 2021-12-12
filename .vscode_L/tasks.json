@@ -5,7 +5,7 @@
     "echoCommand": true,
     "presentation" : { "reveal": "always" },
     "tasks": [
-          //C++ ì»´íŒŒ?¼
+          //C++ ì»´íŒŒ?ï¿½ï¿½
           {
             "label": "save and compile for C++",
             "command": "g++",
@@ -17,7 +17,7 @@
             ],
             "group": "build",
 
-            //ì»´íŒŒ?¼?‹œ ?—?Ÿ¬ë¥? ?¸ì§‘ê¸°?— ë°˜ì˜
+            //ì»´íŒŒ?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½ï¿½? ?ï¿½ï¿½ì§‘ê¸°?ï¿½ï¿½ ë°˜ì˜
             //ì°¸ê³ :   https://code.visualstudio.com/docs/editor/tasks#_defining-a-problem-matcher
 
             "problemMatcher": {
@@ -37,7 +37,7 @@
                 }
             }
         },
-        //C ì»´íŒŒ?¼
+        //C ì»´íŒŒ?ï¿½ï¿½
         {
             "label": "save and compile for C",
             "command": "gcc",
@@ -49,7 +49,7 @@
             ],
             "group": "build",
 
-            //ì»´íŒŒ?¼?‹œ ?—?Ÿ¬ë¥? ?¸ì§‘ê¸°?— ë°˜ì˜
+            //ì»´íŒŒ?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½ï¿½? ?ï¿½ï¿½ì§‘ê¸°?ï¿½ï¿½ ë°˜ì˜
             //ì°¸ê³ :   https://code.visualstudio.com/docs/editor/tasks#_defining-a-problem-matcher
 
             "problemMatcher": {
@@ -69,13 +69,13 @@
                 }
             }
         },
-        // ë°”ì´?„ˆë¦? ?‹¤?–‰(Ubuntu)
+        // ë°”ì´?ï¿½ï¿½ï¿½? ?ï¿½ï¿½?ï¿½ï¿½(Ubuntu)
         {
             "label": "execute",
             "command": "${fileDirname}/${fileBasenameNoExtension}",
             "group": "test"
         },
-        // ë°”ì´?„ˆë¦? ?‹¤?–‰(Windows)
+        // ë°”ì´?ï¿½ï¿½ï¿½? ?ï¿½ï¿½?ï¿½ï¿½(Windows)
         // {
         //     "label": "execute",
         //     "command": "cmd",
@@ -86,28 +86,28 @@
     
         // }
 
-        // {
-        //     "type": "cppbuild",
-        //     "label": "C/C++: gcc ?™œ?„± ?ŒŒ?¼ ë¹Œë“œ",
-        //     "command": "/usr/bin/gcc",
-        //     "args": [
-        //         "-fdiagnostics-color=always",
-        //         "-g",
-        //         "${file}",
-        //         "-o",
-        //         "${fileDirname}/${fileBasenameNoExtension}"
-        //     ],
-        //     "options": {
-        //         "cwd": "${fileDirname}"
-        //     },
-        //     "problemMatcher": [
-        //         "$gcc"
-        //     ],
-        //     "group": {
-        //         "kind": "build",
-        //         "isDefault": true
-        //     },
-        //     "detail": "?””ë²„ê±°?—?„œ ?ƒ?„±?œ ?‘?—…?…?‹ˆ?‹¤."
-        // }
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc ?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½ ë¹Œë“œ",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "?ï¿½ï¿½ë²„ê±°?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½ ?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½?ï¿½ï¿½."
+        }
     ],
 }
