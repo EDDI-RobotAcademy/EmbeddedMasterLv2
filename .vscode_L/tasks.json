@@ -5,7 +5,7 @@
     "echoCommand": true,
     "presentation" : { "reveal": "always" },
     "tasks": [
-          //C++ 컴파?��
+          //C++ 컴파일
           {
             "label": "save and compile for C++",
             "command": "g++",
@@ -17,7 +17,7 @@
             ],
             "group": "build",
 
-            //컴파?��?�� ?��?���? ?��집기?�� 반영
+            //컴파일시 에러를 편집기에 반영
             //참고:   https://code.visualstudio.com/docs/editor/tasks#_defining-a-problem-matcher
 
             "problemMatcher": {
@@ -37,19 +37,19 @@
                 }
             }
         },
-        //C 컴파?��
+        //C 컴파일
         {
             "label": "save and compile for C",
             "command": "gcc",
             "args": [
                 "${file}",
-                "-o",
                 "-g",
+                "-o",
                 "${fileDirname}/${fileBasenameNoExtension}"
             ],
             "group": "build",
 
-            //컴파?��?�� ?��?���? ?��집기?�� 반영
+            //컴파일시 에러를 편집기에 반영
             //참고:   https://code.visualstudio.com/docs/editor/tasks#_defining-a-problem-matcher
 
             "problemMatcher": {
@@ -69,13 +69,13 @@
                 }
             }
         },
-        // 바이?���? ?��?��(Ubuntu)
+        // 바이너리 실행(Ubuntu)
         {
             "label": "execute",
             "command": "${fileDirname}/${fileBasenameNoExtension}",
             "group": "test"
         },
-        // 바이?���? ?��?��(Windows)
+        // 바이너리 실행(Windows)
         // {
         //     "label": "execute",
         //     "command": "cmd",
@@ -84,30 +84,6 @@
         //         "/C", "${fileDirname}\\${fileBasenameNoExtension}"
         //     ]
     
-        // }
-
-        {
-            "type": "cppbuild",
-            "label": "C/C++: gcc ?��?�� ?��?�� 빌드",
-            "command": "/usr/bin/gcc",
-            "args": [
-                "-fdiagnostics-color=always",
-                "-g",
-                "${file}",
-                "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
-            ],
-            "options": {
-                "cwd": "${fileDirname}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "?��버거?��?�� ?��?��?�� ?��?��?��?��?��."
-        }
+        // },
     ],
 }
