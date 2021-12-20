@@ -15,113 +15,87 @@ typedef struct _ringQ {
 	int tail;
 } ringQ;
 
-void ringQ_init(ringQ* ring_buf)
+void ringQ_init(ringQ* ringq)
 {
-	ring_buf->head = -1;
-	ring_buf->tail = -1;
+	ringq->head = 0;
+	ringq->tail = 0;
 
-	memset(ring_buf->buf, 0, BUF_SIZ*sizeof(int));
+	memset(ringq->buf, 0, BUF_SIZ*sizeof(int));
 }
 
-bool ringQ_is_Full(ringQ* ring_buf)
+bool ringQ_is_Full(ringQ* ringq)
 {
-	if( ( (ring_buf->head+1) == ring_buf->tail ) || ( (ring_buf->head == BUF_SIZ-1) && (ring_buf->tail == 0) ) ) {
+	if( (ringq->head + 1)%BUF_SIZ == ringq->tail ) {
 		return true;
 	}
 	return false;
 }
 
-bool ringQ_is_Empty(ringQ* ring_buf)
+bool ringQ_is_Empty(ringQ* ringq)
 {
-	if( ( (ring_buf->tail+1) == ring_buf->head ) || ( (ring_buf->tail == BUF_SIZ-1) && (ring_buf->head == 0) ) ) {
+	if( ringq->head == ringq->tail ) {
 		return true;
 	}
 	return false;
 }
 
-void ringQ_set(ringQ* ring_buf, int data)
+void ringQ_set(ringQ* ringq, int data)
 {
-	if(ringQ_is_Full(ring_buf)) {
+	if( ringQ_is_Full(ringq) ) {
 		printf("ring buffer is Full\n");	
 		return;
 	}
 
-	if(ring_buf->head == -1) {
-		ring_buf->head = 0;
-		ring_buf->tail = 0;
-	}
-	else {
-		if(++(ring_buf->head) == BUF_SIZ) {
-			ring_buf->head = 0; 
-		}
-	}
-
-	ring_buf->buf[ring_buf->head] = data;
-	printf("setData[%d] = %d\n", ring_buf->head, ring_buf->buf[ring_buf->head]);
+	ringq->head = (++ringq->head)%BUF_SIZ;
+	ringq->buf[ringq->head] = data;
+	printf("ringq_set[%d] = %d\n", ringq->head, ringq->buf[ringq->head]);
 }
 
-void ringQ_set_block(ringQ* ring_buf, int *data, int size)
+void ringQ_set_block(ringQ* ringq, int *data, int size)
 {
 	static int cnt = 0;
 
 	while(size--)
 	{
-		if(ringQ_is_Full(ring_buf)) {
+		if(ringQ_is_Full(ringq)) {
 			printf("ring buffer is Full\n");	
 			return;
 		}
-		ringQ_set(ring_buf, *data++);
+		ringQ_set(ringq, *data++);
 	}
 }
 
-// void ringQ_get(ringQ* ring_buf)
-// {
-// 	int data;
-// 	static int cnt = 0;
+int ringQ_get(ringQ* ringq)
+{
+	int data;
 
-// 	if( (ring_buf->head == ring_buf->tail) && !(*(ring_buf->tail)) ) {
-// 		printf("ring buffer is Empty\n");
-// 		return;
-// 	}
+	if( ringQ_is_Empty(ringq) ) {
+		printf("ring buffer is Empty\n");	
+		return -1;
+	}
 
-// 	data = *(ring_buf->tail);
-// 	printf("getData = %d\n", data);
+	ringq->tail = (++ringq->tail)%BUF_SIZ;
+	data = ringq->buf[ringq->tail];
+	printf("ringq_get[%d] = %d\n", ringq->tail, data);
 
-// 	*(ring_buf->tail) = 0;
-// 	ring_buf->tail += 1;
-// 	cnt ++;
-	
-// 	if(cnt == BUF_SIZ) {
-// 		ring_buf->tail = ring_buf->buf;
-// 		cnt = 0;
-// 	}
-// }
+	return data;
+}
 
-// void ringQ_get_block(ringQ* ring_buf, int size)
-// {
-// 	int data;
-// 	static int cnt = 0;
+int ringQ_get_block(ringQ* ringq, int size)
+{
+	int data;
 
-// 	while(size--)
-// 	{
-// 		if( (ring_buf->head == ring_buf->tail) && !(*(ring_buf->tail)) ) {
-// 			printf("ring buffer is Empty\n");
-// 			return;
-// 		}
+	while(size--)
+	{
+		if( ringQ_is_Empty(ringq) ) {
+			printf("ring buffer is Empty\n");	
+			return -1;
+		}
 
-// 		data = *(ring_buf->tail);
-// 		printf("getData = %d\n", data);
-
-// 		*(ring_buf->tail) = 0;
-// 		ring_buf->tail += 1;
-// 		cnt ++;
-		
-// 		if(cnt == BUF_SIZ) {
-// 			ring_buf->tail = ring_buf->buf;
-// 			cnt = 0;
-// 		}
-// 	}
-// }
+		data = ringQ_get(ringq);
+	}
+	return data;	
+}
 
 int main(void)
 {
@@ -129,21 +103,30 @@ int main(void)
 	int data[] = {10, 20, 30, 40, 
 	              50, 60, 70, 80, 
 				  90, 100, 110, 120};
-	ringQ ring_buf;
+	int rtnData;
+	ringQ ringq;
 
-	ringQ_init(&ring_buf);
+	ringQ_init(&ringq);
 
 #if 0
-	for(i = 0; i < BUF_SIZ+1; i++) {
-		ringQ_set(&ring_buf, data[i]);
+	for(i = 0; i < 5; i++) {
+		ringQ_set(&ringq, data[i]);
 	}
 
-	// for(i = 0; i < BUF_SIZ+1; i++) {
-	// 	ringQ_get(&ring_buf);
-	// }
+	for(i = 0; i < 3; i++) {
+		rtnData = ringQ_get(&ringq);
+	}
+
+	for(i = 0; i < 9; i++) {
+		ringQ_set(&ringq, data[i]);
+	}
+
+	for(i = 0; i < 10; i++) {
+		rtnData = ringQ_get(&ringq);
+	}
 #else
-	ringQ_set_block(&ring_buf,data,15);
-	// ringQ_get_block(&ring_buf,sizeof(data));
+	ringQ_set_block(&ringq,data,15);
+	ringQ_get_block(&ringq,15);
 #endif
 
 	
