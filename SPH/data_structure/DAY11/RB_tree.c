@@ -7,7 +7,7 @@
 //#define Guide_Code 1
 //#define old 0
 //#define new 1
-//#define delete 1
+#define delete 1
 
 #define ABS(x) ((x > 0) ? (x) : -(x))
 
@@ -481,6 +481,8 @@ bool chk_child_status(rb *root)
 		res = false;
 	else if(!root->right)
 		res = false;
+	else if(root->left->color == red || root->right->color == red)
+		res = false;
 	else if(root->left->color == red && root->right->color == red)
 		res = false;
 	else
@@ -502,10 +504,16 @@ rot_case chk_rot_case(rb *parent, rb *root)
 {
 	printf("rotation case check\n");
 	rot_case result;
+
+	//child가 없는 경우는 chk_child_status에서 확인함
 	if(parent->data < root->data)
 	{
 		printf("RR, RL case\n");
 		if(root->left && !root->right)
+			result = RL;
+		else if(!root->left && root->right)
+			result = RR;
+		else if(root->left->color == red && root->right->color == black)
 			result = RL;
 		else
 			result = RR;
@@ -514,6 +522,10 @@ rot_case chk_rot_case(rb *parent, rb *root)
 	{
 		printf("LL, LR case\n");
 		if(!root->left && root->right)
+			result = LR;
+		else if(root->left && !root->right)
+			result = LL;
+		else if(root->left->color == black && root->right->color == red)
 			result = LR;
 		else
 			result = LL;
@@ -581,24 +593,74 @@ void black_del_case_handler(rb **top_root, rb **del_root, rb **del_node)
 	rb *parent = ((*del_node)->parent) ? (*del_node)->parent : NULL;
 	rb *brother = find_brother(top_root, del_node);
 
-	if(*top_root == *del_node)
+	if(!parent || *top_root == *del_node)
 		return;
 
 	switch(black_del_case(del_node, brother))
 	{
 		case case1:
 			printf("case1 : black without child, brother=red\n");
+			switch(chk_rot_case(parent, brother))
+			{
+				//형제가 오른쪽에 있는 경우
+				case RR:
+					if(chk_child_status(brother->left))
+						swap_color(brother, brother->left);
+					else
+						swap_color(parent, brother);
+
+					left_rotation(top_root, &brother);
+					//del_node가 del_root의 left max라면 회전 후 del_root를 변경 
+					//*del_root = (*del_root != *del_node) ? brother->left : *del_root;
+					*del_root = (*del_root == parent) ? brother->left : *del_root;
+					black_del_case_handler(top_root, del_root, &brother);
+#if 0
+					black_del_case_handler(top_root, del_root, del_node);
+#endif
+					break;
+				//형제가 왼쪽에 있는 경우
+				case LL:
+					if(chk_child_status(brother->right))
+						swap_color(brother, brother->right);
+					else
+						swap_color(parent, brother);
+
+					right_rotation(top_root, &brother);
+					//del_node가 del_root의 left max라면 회전 후 del_root를 변경 
+					//*del_root = (*del_root != *del_node) ? brother->right : *del_root;
+					*del_root = (*del_root == parent) ? brother->right : *del_root;
+					black_del_case_handler(top_root, del_root, &brother);
+#if 0
+					black_del_case_handler(top_root, del_root, del_node);
+#endif
+					break;
+			}
 			printf("finish case1 handle\n");
 			break;
 		case case2:
 			printf("case2 : black without child, brother=black, nephew=NULL\n");
-			if(parent->color == red)
+			if(parent->color != red)
+				brother->color = red;
+#if 0
+			black_del_case_handler(top_root, del_root, &parent);
+#endif
+			//parent = red, brother = black, nephew = NULL인 경우
+			//brother와 parent의 색을 서로 변경
+			else if(chk_child_status(brother))
+			{
 				swap_color(brother, parent);
+				return;
+			}
+			black_del_case_handler(top_root, del_root, &parent);
+#if 0
+			if(parent->color == red)
+				swap_color(parent, brother);
 			else
 			{
 				brother->color = red;
 				black_del_case_handler(top_root, del_root, &parent);
 			}
+#endif
 			printf("finish case2 handle\n");
 			break;
 		case case3:
@@ -610,8 +672,22 @@ void black_del_case_handler(rb **top_root, rb **del_root, rb **del_node)
 					printf("RL rotation\n");
 
 					child = brother->left;
+
+#if 0
+					if(brother->right && brother->right->color == black)
+						swap_color(child, child->right);
+					else
+						child->color = parent->color;
+#endif
+#if 0
 					child->color = parent->color;
 					parent->color = brother->color;
+#endif
+#if 1
+					child->color = brother->color;
+					brother->color = parent->color;
+					parent->color = child->color;
+#endif
 
 					child->parent = parent;
 					brother->parent = child;
@@ -625,26 +701,49 @@ void black_del_case_handler(rb **top_root, rb **del_root, rb **del_node)
 
 					left_rotation(top_root, &child);
 					//del_node가 del_root의 left max라면 회전 후 del_root를 변경 
-					*del_root = (*del_root != *del_node) ? child->left : *del_root;
+					//*del_root = (*del_root != *del_node) ? child->left : *del_root;
+					*del_root = (*del_root == parent) ? child->left : *del_root;
 					break;
 				case RR:
 					printf("RR rotation\n");
 
 					child = brother->right;
+#if 0
+					if(child->left && child->left->color == red)
+						swap_color(child, child->left);
+					else
+						child->color = brother->color;
+#endif
+
 					child->color = brother->color;
 					brother->color = parent->color;
 					parent->color = child->color;
 
 					left_rotation(top_root, &brother);
 					//del_node가 del_root의 left max라면 회전 후 del_root를 변경 
-					*del_root = (*del_root != *del_node) ? brother->left : *del_root;
+					//*del_root = (*del_root != *del_node) ? brother->left : *del_root;
+					*del_root = (*del_root == parent) ? brother->left : *del_root;
 					break;
 				case LR:
 					printf("LR rotation\n");
 
 					child = brother->right;
+
+#if 0
+					if(child->left && child->left->color == red)
+						swap_color(child, child->left);
+					else
+						child->color = parent->color;
+#endif
+#if 0
 					child->color = parent->color;
 					parent->color = brother->color;
+#endif
+#if 1
+					child->color = brother->color;
+					brother->color = parent->color;
+					parent->color = child->color;
+#endif
 
 					child->parent = parent;
 					brother->parent = child;
@@ -658,19 +757,27 @@ void black_del_case_handler(rb **top_root, rb **del_root, rb **del_node)
 
 					right_rotation(top_root, &child);
 					//del_node가 del_root의 left max라면 회전 후 del_root를 변경 
-					*del_root = (*del_root != *del_node) ? child->right : *del_root;
+					//*del_root = (*del_root != *del_node) ? child->right : *del_root;
+					*del_root = (*del_root == parent) ? child->right : *del_root;
 					break;
 				case LL:
 					printf("LL rotation\n");
 					child = brother->left;
 
+#if 0
+					if(brother->right && brother->right->color == black)
+						swap_color(child, child->right);
+					else
+						child->color = brother->color;
+#endif
 					child->color = brother->color;
 					brother->color = parent->color;
 					parent->color = child->color;
 
 					right_rotation(top_root, &brother);
 					//del_node가 del_root의 left max라면 회전 후 del_root를 변경 
-					*del_root = (*del_root != *del_node) ? brother->right : *del_root;
+					//*del_root = (*del_root != *del_node) ? brother->right : *del_root;
+					*del_root = (*del_root == parent) ? brother->right : *del_root;
 					break;
 			}
 			printf("finish case3 handle\n");
@@ -683,7 +790,7 @@ void black_del_case_handler(rb **top_root, rb **del_root, rb **del_node)
 
 void delete_rb_data(rb **top_root, rb **root, int data)
 {
-	rb **del_node;
+	rb **del_node = NULL;
 	//밸런싱 회전에 의한 root 위치 변경 예외처리용 변수
 	rb *backup;
 	bool del_flg = false;
@@ -703,19 +810,25 @@ void delete_rb_data(rb **top_root, rb **root, int data)
 	//단일 노드 또는 자식 1개 인 경우
 	//단일 노드 : red
 	//자식 1개 : black, 자식 = right red
-	else
+	else 
 	{
 		del_flg = true;
 		backup = *root;
 		del_node = root;
 	}
 
+	if(!del_node)
+	{
+		printf("there is no data in tree\n");
+		return;
+	}
+
 	switch(del_flg)
 	{
 		case true:
+			printf("delete data = %d\n", (*del_node)->data);
 			if((*del_node)->color == black)
 			{
-				printf("delete data = %d\n", (*del_node)->data);
 				//chk_child_status
 				//true : 자식모두 black 또는 NULL -> case handler 실행 후 삭제
 				//false : 자식모두 red 또는 1개의 red -> 색변경 후 삭제
@@ -844,9 +957,13 @@ int main(void)
 	//int data[] = {55, 32, 60, 31, 40, 58, 65, 29};
 	//int data[] = {55, 31, 29};
 	//int data[] = {500, 200, 1000, 100, 300, 450, 435};
+	//case1,2
 	int data[] = {6, 48, 17, 47, 13, 49, 50, 25, 27, 29, 46, 33, 19, 5, 44, 10, 32, 30, 23, 26, 15, 12, 38, 20, 18, 24, 4, 2,
 				  43, 9, 7, 37, 45, 40, 16, 42, 31, 3, 11, 8, 14, 36, 35, 22, 34, 41, 39, 21, 28, 1};
+
 	//delete test bench
+	//case1
+	//int data[] = {55, 45, 65, 75, 60, 85, 59, 62, 70};
 	//case3
 	//RR : black parent
 	//int data[] = {55, 45, 65, 75};
@@ -877,9 +994,19 @@ int main(void)
 	print_rb(root);
 #else
 	printf("\ndelete node!\n");
+	//case1
+	//case1 -> case2
+	//delete_rb_data(&root, &root, 45);
+	//delete_rb_data(&root, &root, 44);
+	//case1 -> case3
+	//delete_rb_data(&root, &root, 55);
+	//delete_rb_data(&root, &root, 45);
+
 	//case2
-	delete_rb_data(&root, &root, 18);
-	delete_rb_data(&root, &root, 7);
+	//delete_rb_data(&root, &root, 18);
+	//delete_rb_data(&root, &root, 7);
+	delete_rb_data(&root, &root, 10);
+
 	//case3
 	//RR,RL : black parent
 	//delete_rb_data(&root, &root, 45);
