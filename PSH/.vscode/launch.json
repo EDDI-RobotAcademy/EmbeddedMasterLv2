@@ -8,14 +8,13 @@
             "name": "gcc - 활성 파일 빌드 및 디버그",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerPath": "gdb.exe",
             "setupCommands": [
                 {
                     "description": "gdb에 자동 서식 지정 사용",
@@ -28,7 +27,8 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "save and compile for C"
+            "preLaunchTask": "C/C++: gcc 활성 파일 빌드",
+            "miDebuggerPath": "/usr/bin/gdb"
         }
     ]
 }
