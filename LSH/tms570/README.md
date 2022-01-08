@@ -72,6 +72,21 @@ sudo apt install playonlinux
 
 4. playonlinux를 구동합니다.
 
-5. 
+5. Install을 누른다.
+
+6. 좌측 하단에 Install a non-listed program을 누른다.
+
+7. Next -> Next를 누릅니다.
+
+8. Install a program in a new virtual drive를 선택하고 Next
+
+9. 이름을 반드시 써줘야 한다 - z정도가 무난함
+
+10. 32 bits Windows installation을 누릅니다.
+
+11. Browse에서 다운로드 받은 HalCoGen.exe를 넣어주면 됩니다.
+
+12. 설치 도중 Diagnostic(진단) 라이브러리 설치 사항이 나타난다.
+    우리가 사용하는 tms570lc4357만 살리고 나머지는 끄도록 한다(용량 세이브)
 
 ```
