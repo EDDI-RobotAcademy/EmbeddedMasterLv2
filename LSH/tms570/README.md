@@ -22,10 +22,14 @@ https://software-dl.ti.com/ccs/esd/documents/ccs_downloads.html
 cd ~
 mkdir sw
 cd sw
-mv ~/Downloads/ccs~~~ ./
-tar zxvf ccs~~~
+mkdir ti
+cd ti
+mv ~/Downloads/CCS11.1.0.00011_linux-x64.tar.gz ./
+tar zxvf CCS11.1.0.00011_linux-x64.tar.gz
 
-5. 압축을 해제했다면 아
+5. 압축을 해제했다면 CCS 디렉토리가 보일 것이다.
+
+cd CCS11.1.0.00011_linux-x64
 
 
 ```
