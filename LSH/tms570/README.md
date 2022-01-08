@@ -40,6 +40,12 @@ https://software-dl.ti.com/ccs/esd/documents/ccsv11_linux_host_support.html
 결론:
 sudo apt install libc6:i386 libusb-0.1-4 libgconf-2-4 libncurses5 libpython2.7 libtinfo5
 
+6. 이후 Custom Installation을 눌러서 설치를 진행한다.
+
+7. Hercules Safety MCU를 선택 합니다.
+
+8. 이후 Forward를 하면 설치가 진행됩니다.
+
 
 
 
