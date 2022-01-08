@@ -88,5 +88,13 @@ sudo apt install playonlinux
 
 12. 설치 도중 Diagnostic(진단) 라이브러리 설치 사항이 나타난다.
     우리가 사용하는 tms570lc4357만 살리고 나머지는 끄도록 한다(용량 세이브)
-
 ```
+
+## CCS 프로젝트 만들기
+
+```make
+1. File -> New -> Project or Other(CCS Proejct)
+2. Empty Project
+3.    
+```
+
