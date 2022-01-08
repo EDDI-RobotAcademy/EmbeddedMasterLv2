@@ -95,6 +95,10 @@ sudo apt install playonlinux
 ```make
 1. File -> New -> Project or Other(CCS Proejct)
 2. Empty Project
-3.    
+3. Target: Unclassifie Devices
+4. TMS570LC43xx
+5. Connection: Texas Instruments XDS100v2 USB Debug Probe
+6. 
+
 ```
 
