@@ -98,7 +98,14 @@ sudo apt install playonlinux
 3. Target: Unclassifie Devices
 4. TMS570LC43xx
 5. Connection: Texas Instruments XDS100v2 USB Debug Probe
-6. 
+
+* 만약 Verify 과정에서 문제가 발생한다면 아래와 같은 절차를 진행합니다.
+
+cd ~/ti/ccs숫자/ccs/install_scripts
+sudo ./install_drivers.sh
+
+6. 다시 Verify를 통해 검증을 수행합니다.
+7. 
 
 ```
 
