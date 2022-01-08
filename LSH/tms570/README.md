@@ -35,5 +35,12 @@ cd CCS11.1.0.00011_linux-x64
   
 * 32-bit Dependency Error 발생시
 
+https://software-dl.ti.com/ccs/esd/documents/ccsv11_linux_host_support.html
+
+결론:
+sudo apt install libc6:i386 libusb-0.1-4 libgconf-2-4 libncurses5 libpython2.7 libtinfo5
+
+
+
 
 ```
