@@ -58,12 +58,19 @@ sudo apt install libc6:i386 libusb-0.1-4 libgconf-2-4 libncurses5 libpython2.7 l
 
 https://www.ti.com/tool/HALCOGEN
 
-2. PlayOnLinux를 설치합니다.
+2. 아래 절차를 따라서 압축을 해제합니다.
+
+cd ~/sw/ti
+mkdir halcogen
+cd halcogen
+mv ~/Downloads/spnc030g.zip ./
+
+3. PlayOnLinux를 설치합니다.
 
 sudo apt install playonlinux
 
-3. playonlinux를 구동합니다.
+4. playonlinux를 구동합니다.
 
-4. 
+5. 
 
 ```
