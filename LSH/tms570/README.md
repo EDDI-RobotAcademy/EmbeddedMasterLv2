@@ -64,6 +64,7 @@ cd ~/sw/ti
 mkdir halcogen
 cd halcogen
 mv ~/Downloads/spnc030g.zip ./
+unzip spnc030g.zip
 
 3. PlayOnLinux를 설치합니다.
 
