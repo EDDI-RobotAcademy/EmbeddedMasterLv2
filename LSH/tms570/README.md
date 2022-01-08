@@ -46,7 +46,17 @@ sudo apt install libc6:i386 libusb-0.1-4 libgconf-2-4 libncurses5 libpython2.7 l
 
 8. 이후 Forward를 하면 설치가 진행됩니다.
 
+9. Launch를 눌러서 실행이 잘 되면 OK
+```
 
+## HalCoGen 설정
+
+```make
+0. PlayOnLinux와 HalCoGen이 필요합니다.
+
+1. HalCoGen을 다운로드 받습니다.
+
+https://www.ti.com/tool/HALCOGEN
 
 
 ```
