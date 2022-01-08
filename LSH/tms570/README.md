@@ -30,6 +30,10 @@ tar zxvf CCS11.1.0.00011_linux-x64.tar.gz
 5. 압축을 해제했다면 CCS 디렉토리가 보일 것이다.
 
 cd CCS11.1.0.00011_linux-x64
+./ccs_setup_11.1.0.00011.run
+  
+  
+* 32-bit Dependency Error 발생시
 
 
 ```
