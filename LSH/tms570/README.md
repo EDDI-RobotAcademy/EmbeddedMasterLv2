@@ -105,7 +105,24 @@ cd ~/ti/ccs숫자/ccs/install_scripts
 sudo ./install_drivers.sh
 
 6. 다시 Verify를 통해 검증을 수행합니다.
-7. 
+7. project name에는 다룰 내용에 대해 직관적인 이름으로 적어주면 좋습니다.
 
+모두 완료후 finish를 하면 됩니다.
+
+8. project name을 우클릭해서 properties를 누른다.
+9. Resource에 경로를 복사하도록 한다.
+```
+
+## CCS 이후 HalCoGen 연동
+
+```make
+1. HalCoGen을 킨다.
+2. File -> New -> Project
+3. Family: TMS570LC43x
+4. Device: TMS570LC4357ZWT와 Free가 있는데 하나는 No-OS, 다른 하나는 OS
+5. 앞서 복사한 경로를 Location에 복사 붙여넣기 한다.
+6. Create directory for project를 체크 해제한다.
+7. Name에 복사한 경로의 마지막 이름을 복사해서 넣는다.
+8. OK 하면 자동화 툴이 준비가 된다.
 ```
 
