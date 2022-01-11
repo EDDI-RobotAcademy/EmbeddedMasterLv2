@@ -7,7 +7,7 @@
 //#define Guide_Code 1
 //#define old 0
 //#define new 1
-//#define delete 1
+#define delete 1
 
 #define ABS(x) ((x > 0) ? (x) : -(x))
 
@@ -164,83 +164,12 @@ rb **find_tree_data(rb **root, int data)
     return NULL;
 }
 
-rb *find_brother(rb **top_root, rb **root)
+bool chk_double_red(rb **root, rb **child)
 {
-	printf("start find brother\n");
-	rb *parent = (*root != *top_root) ? (*root)->parent : NULL;
-	rb *brother;
-
-	if(!parent)
-		brother = NULL;
-	else if(parent->data > (*root)->data)
-		brother = parent->right;
-	else
-		brother = parent->left;
-
-	printf("finish find brother\n");
-	return brother;
-}
-
-bool chk_double_red(rb *root, rb *child)
-{
-	if(root->color == child->color)
+	if((*root)->color == red && (*child)->color == red)
 		return true;
 	else
 		return false;
-}
-
-rb *find_red_child(rb *root)
-{
-	printf("find red child\n");
-
-	rb *left = root->left;
-	rb *right = root->right;
-	rb *res;
-
-	if(!left && !right)
-		res = NULL;
-	else if(left && chk_double_red(root, left))
-		res = left;
-	else if(right && chk_double_red(root, right))
-		res = right;
-	else
-		res = NULL;
-	printf("finish find red child\n");
-	return res;
-}
-
-rot_case chk_rot_case(rb *parent, rb *root)
-{
-	printf("rotation case check\n");
-	rot_case result;
-
-	//child가 없는 경우는 chk_child_status에서 확인함
-	if(parent->data < root->data)
-	{
-		printf("RR, RL case\n");
-		if(root->left && !root->right)
-			result = RL;
-		else if(!root->left && root->right)
-			result = RR;
-		else if(root->left->color == red && root->right->color == black)
-			result = RL;
-		else
-			result = RR;
-	}
-	else
-	{
-		printf("LL, LR case\n");
-		if(!root->left && root->right)
-			result = LR;
-		else if(root->left && !root->right)
-			result = LL;
-		else if(root->left->color == black && root->right->color == red)
-			result = LR;
-		else
-			result = LL;
-	}
-	printf("finish rotation case check\n");
-	return result;
 }
 
 void left_rotation(rb **top_root, rb **root)
@@ -248,7 +177,7 @@ void left_rotation(rb **top_root, rb **root)
 	rb *parent = (*root)->parent;
 	rb *me = *root;
 	rb *child = (*root)->right;
-	rb *grand_parent = (!parent->parent) ? NULL : parent->parent;
+	rb *grand_parent = parent->parent;
 
 	me->parent = grand_parent;
 	parent->parent = me;
@@ -270,7 +199,6 @@ void left_rotation(rb **top_root, rb **root)
 
 void right_rotation(rb **top_root, rb **root)
 {
-	printf("start right rotation\n");
 	rb *parent = (*root)->parent;
 	rb *me = *root;
 	rb *child = (*root)->left;
@@ -292,7 +220,38 @@ void right_rotation(rb **top_root, rb **root)
 		grand_parent->left = me;
 	else
 		grand_parent->right = me;
-	printf("finish right rotation\n");
+}
+
+rb *find_brother(rb **top_root, rb **root)
+{
+	printf("start find brother\n");
+	rb *parent = (*root != *top_root) ? (*root)->parent : NULL;
+	rb *brother;
+
+	if(!parent)
+		brother = NULL;
+	else if(parent->data > (*root)->data)
+		brother = parent->right;
+	else
+		brother = parent->left;
+
+	printf("finish find brother\n");
+	return brother;
+}
+
+rb *find_child(rb **root)
+{
+	rb *left = (*root)->left;
+	rb *right = (*root)->right;
+
+	if(!left && !right)
+		return NULL;
+	else if(!left)
+		return right;
+	else if(!right)
+		return left;
+	else
+		return (left->color == black) ? right : left;
 }
 
 /***************TODO***************/
@@ -320,105 +279,6 @@ void right_rotation(rb **top_root, rb **root)
 		5.2.1 parent가 top_root이면 top_root의 좌,우 black으로 변경
 		5.2.2 parent가 top_root가 아니면 parent = red, parent 좌우 black
 */
-
-/*
-   1. 자식노드가 red인지 확인한다.
-	(1) 자식이 없거나 black이라면 return
-   2. 자식노드가 red라면 brother의 색을 확인한다. 
-*/
-void chk_rb_balance(rb **top_root, rb **root) 
-{
-	printf("chkeck rb balance\n");
-	printf("root = %d\n", (*root)->data);
-	rb *child = find_red_child(*root);
-	rb *brother = find_brother(top_root, root);
-	rb *backup = *root;
-
-	//2
-	if(!(*root)->parent || !child)
-		return;
-
-	if(!brother || brother->color == black)
-	{
-		switch(chk_rot_case((*root)->parent, *root))
-		{
-			case RR:
-				printf("RR rotation\n");
-				left_rotation(top_root, root);
-				backup->right->color = black;
-				printf("finish RR rotation\n");
-				break;
-			case RL:
-				printf("RL rotation\n");
-				child->parent = backup->parent;
-				backup->parent = child;
-
-				if(child->right)
-					child->right->parent = backup;
-
-				backup->left = child->right;
-
-				child->right = backup;
-
-				left_rotation(top_root, &child);
-
-				//rotation 후 me가 child로 변경되므로
-				backup = child;
-				backup->right->color = black;
-				printf("finish RL rotation\n");
-				break;
-			case LL:
-				printf("LL rotation\n");
-				right_rotation(top_root, root);
-				backup->left->color = black;
-				printf("finish LL rotation\n");
-				break;
-			case LR:
-				printf("LR rotation\n");
-				child->parent = backup->parent;
-				backup->parent = child;
-
-				if(child->left)
-					child->left->parent = backup;
-
-				backup->right = child->left;
-				child->left = backup;
-
-				right_rotation(top_root, &child);
-
-				//rotation후 me가 child로 변경된다
-				backup = child;
-				backup->left->color = black;
-				printf("finish LR rotation\n");
-				break;
-		}
-
-		if(!backup->parent)
-		{
-			printf("after rotation re color\n");
-			backup->color = black;
-			backup->left->color = black;
-			backup->right->color = black;
-			printf("finish rotation re color\n");
-		}
-	}
-	else
-	{
-		if((*root)->parent->data == (*top_root)->data)
-		{
-			(*root)->color= black;
-			brother->color= black;
-		}
-		else
-		{
-			(*root)->parent->color= red;
-			(*root)->color= black;
-			brother->color= black;
-		}
-	}
-	printf("finish rb balance\n");
-}
-#if 0
 void chk_rb_balance(rb **top_root, rb **root) 
 {
 	rb *parent;
@@ -541,20 +401,7 @@ void chk_rb_balance(rb **top_root, rb **root)
 			return;
 	}
 }
-#endif
 
-/*
-   1. root가 null
-   (1) 데이터 삽입
-   (2) parent에 null삽입
-   (3) parent가 null이라면(top_root라면) black <-> red
-   (4) return
-   2. 현재 root를 부모로 백업한다
-   3. root가 null이 아니면
-   (1) root의 data > data라면 root의 왼쪽을 root로 하고 백업한 부모를 parent로 하여 insert함수 재귀호출
-   (2) root의 data < data라면 root의 오른쪽을 root로 하고 백업한 부모를 parent로 하여 insert함수 재귀호출
-   4. 현재 root가 red라면 chk_balance함수를 실행한다
- */
 void insert_rb_data(rb **top_root, rb **root, rb *parent, int data)
 {
 	rb *backup_papa;
@@ -579,8 +426,7 @@ void insert_rb_data(rb **top_root, rb **root, rb *parent, int data)
 		insert_rb_data(top_root, &(*root)->right, backup_papa, data);
 	}
 
-	if((*root)->color == red)
-		chk_rb_balance(top_root, root);
+	chk_rb_balance(top_root, root);
 }
 
 rb **find_left_max(rb **root)
@@ -652,6 +498,40 @@ void swap_color(rb *x, rb *y)
 
 	x->color = y->color;
 	y->color = tmp;
+}
+
+rot_case chk_rot_case(rb *parent, rb *root)
+{
+	printf("rotation case check\n");
+	rot_case result;
+
+	//child가 없는 경우는 chk_child_status에서 확인함
+	if(parent->data < root->data)
+	{
+		printf("RR, RL case\n");
+		if(root->left && !root->right)
+			result = RL;
+		else if(!root->left && root->right)
+			result = RR;
+		else if(root->left->color == red && root->right->color == black)
+			result = RL;
+		else
+			result = RR;
+	}
+	else
+	{
+		printf("LL, LR case\n");
+		if(!root->left && root->right)
+			result = LR;
+		else if(root->left && !root->right)
+			result = LL;
+		else if(root->left->color == black && root->right->color == red)
+			result = LR;
+		else
+			result = LL;
+	}
+	printf("finish rotation case check\n");
+	return result;
 }
 
 /*TODO*/
@@ -1069,7 +949,6 @@ int main(void)
     }
 #else
 	//insert test bench
-	//int data[] = {3, 2, 1};
 	//int data[] = {500, 50, 1000, 100, 25, 750, 1250, 75, 125, 37, 12, 625, 875, 1125, 1375, 6, 30, 40, 45};
 	//int data[] = {87, 58, 50,  34,   6,  57,  41,  43,  84,  95,   9,  62,  28,  2, 78,  92,  52,   5,  55,  49,  86};
 	//int data[] = {72, 194, 173, 161, 133, 158, 200};
@@ -1079,10 +958,8 @@ int main(void)
 	//int data[] = {55, 31, 29};
 	//int data[] = {500, 200, 1000, 100, 300, 450, 435};
 	//case1,2
-	//int data[] = {6, 48, 17, 47, 13, 49, 50, 25, 27, 29, 46, 33, 19, 5, 44, 10, 32, 30, 23, 26, 15, 12, 38, 20, 18, 24, 4, 2,
-				  //43, 9, 7, 37, 45, 40, 16, 42, 31, 3, 11, 8, 14, 36, 35, 22, 34, 41, 39, 21, 28, 1};
-    int data[] = {20, 8, 40, 4, 3, 30, 13, 22, 43, 27, 6, 11, 50, 23, 31, 45, 35, 1, 10, 5, 2, 48, 39, 24, 7, 32, 16, 34,
-                  28, 33, 29, 42, 17, 36, 38, 15, 9, 46, 14, 26, 21, 12, 19, 44, 18, 37, 49, 41, 47, 25};
+	int data[] = {6, 48, 17, 47, 13, 49, 50, 25, 27, 29, 46, 33, 19, 5, 44, 10, 32, 30, 23, 26, 15, 12, 38, 20, 18, 24, 4, 2,
+				  43, 9, 7, 37, 45, 40, 16, 42, 31, 3, 11, 8, 14, 36, 35, 22, 34, 41, 39, 21, 28, 1};
 
 	//delete test bench
 	//case1
@@ -1103,7 +980,7 @@ int main(void)
 		printf("insert processing!\n");
 		printf("insert data = %d\n", data[i]);
 		insert_rb_data(&root, &root, NULL, data[i]);
-		//print_rb(root);
+		print_rb(root);
 	}
 #endif
 
@@ -1116,7 +993,7 @@ int main(void)
 	printf("delete clear!\n");
 	print_rb(root);
 #else
-	//printf("\ndelete node!\n");
+	printf("\ndelete node!\n");
 	//case1
 	//case1 -> case2
 	//delete_rb_data(&root, &root, 45);
@@ -1128,15 +1005,15 @@ int main(void)
 	//case2
 	//delete_rb_data(&root, &root, 18);
 	//delete_rb_data(&root, &root, 7);
-	//delete_rb_data(&root, &root, 10);
+	delete_rb_data(&root, &root, 10);
 
 	//case3
 	//RR,RL : black parent
 	//delete_rb_data(&root, &root, 45);
 	//RR,RL : red parent
 	//delete_rb_data(&root, &root, 75);
-	//printf("delete clear!\n");
-	//print_rb(root);
+	printf("delete clear!\n");
+	print_rb(root);
 #endif
     return 0;
 }
