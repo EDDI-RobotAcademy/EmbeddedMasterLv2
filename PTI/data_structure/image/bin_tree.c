@@ -205,7 +205,7 @@ void nr_delete_tree(tree **root, int data)
 		else if((*root)->left && (*root)->right)
 		{
 			find_max(&(*root)->left, &num);
-		//	(*root)->data = num;
+			(*root)->data = num;
 			return;
 		}
 		else
