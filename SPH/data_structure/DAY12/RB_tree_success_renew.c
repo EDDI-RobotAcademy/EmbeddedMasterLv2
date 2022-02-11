@@ -7,7 +7,7 @@
 //#define Guide_Code 1
 //#define old 0
 //#define new 1
-//#define delete 1
+#define delete 1
 
 #define ABS(x) ((x > 0) ? (x) : -(x))
 
