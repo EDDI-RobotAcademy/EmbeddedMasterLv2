@@ -28,7 +28,7 @@
 #include "lwipopts.h"
 #include "lwiplib.h"
 #include "httpd.h"
-#include "lwip\inet.h"
+#include "lwip/inet.h"
 #include "locator.h"
 
 #define TMS570_MDIO_BASE_ADDR 	0xFCF78900u /* Same base address for TMS570 & RM48 devices */
@@ -170,7 +170,9 @@ void EMAC_LwIP_Main (uint8_t * macAddress)
 			
 	        
 	        /* Before printing the next set, wait for a character on the terminal */
-	        sciReceive(sciREGx, 1, &testChar);
+	        //sciReceive(sciREGx, 1, &testChar);
+
+			vTaskDelay(1000);
 	    }
 	}
 }
