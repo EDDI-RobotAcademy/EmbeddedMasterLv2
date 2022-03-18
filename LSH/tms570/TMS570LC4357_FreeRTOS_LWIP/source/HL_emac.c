@@ -1795,8 +1795,6 @@ void EMACTxIntISR(void)
  *
  * @return none
  */
-
-
 /*SAFETYMCUSW 69 S MR:3.4 <APPROVED> "#pragma required for interrupt handler." */   
 #pragma CODE_STATE(EMACRxIntISR, 32)
 /*SAFETYMCUSW 69 S MR:3.4 <APPROVED> "#pragma required for interrupt handler." */   
