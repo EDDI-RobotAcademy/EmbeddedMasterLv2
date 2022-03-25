@@ -168,6 +168,9 @@ void EMAC_LwIP_Main (uint8_t * macAddress)
 			sciDisplayText(sciREGx, txtIPAddrItoA, 16);
 			sciDisplayText(sciREGx, txtCRLF, sizeof(txtCRLF));
 			
+			//udp_sendto(pcb, p, dst_ip, dst_port)
+			//udp_new()
+			pbuf_header(p, header_size_increment)
 	        
 	        /* Before printing the next set, wait for a character on the terminal */
 	        //sciReceive(sciREGx, 1, &testChar);
