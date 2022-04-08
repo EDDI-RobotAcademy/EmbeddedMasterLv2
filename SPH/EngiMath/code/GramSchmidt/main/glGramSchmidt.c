@@ -17,11 +17,11 @@ struct _Lcolor
 
 typedef struct _Lcolor Lcolor;
 
-void draw_3d_vector(vec3 *arr, vec3 offset)
+void draw_3d_vector(vec3 *arr)
 {
-	//vector 1
+	//vector 1 : yellow
 #if 1
-	glColor3f(1, 0, 0);
+	glColor3f(1, 1, 0);
 #endif
 #if 0
 	glColor3f(vcolor[0].red, vcolor[0].green, vcolor[0].blue);
@@ -31,9 +31,9 @@ void draw_3d_vector(vec3 *arr, vec3 offset)
 		glVertex3f(0.0, 0.0, 0.0);
 	glEnd();
 
-	//vector 2
+	//vector 2 : light blue
 #if 1
-	glColor3f(0, 1, 0);
+	glColor3f(0, 1, 1);
 #endif
 #if 0
 	glColor3f(v2.red, v2.green, v2.blue);
@@ -43,9 +43,9 @@ void draw_3d_vector(vec3 *arr, vec3 offset)
 		glVertex3f(0.0, 0.0, 0.0);
 	glEnd();
 
-	//vector 3
+	//vector 3 : pink
 #if 1
-	glColor3f(0, 0, 1);
+	glColor3f(1, 0, 1);
 #endif
 #if 0
 	glColor3f(v3.red, v3.green, v3.blue);
@@ -65,21 +65,23 @@ void draw_gramschmidt(vec3 *arr, vec3 offset)
 			  vec3_scale, vec3_dot, vec3_cross,
 			  print_vec3, gramschmidt_normalization};
 
+	//vector를 offset만큼 수평 이동시킨다
 	glTranslatef(offset.x, offset.y, offset.z);
-	draw_3d_vector(arr, offset);
+
+	//draw_3d_vector(arr);
 
 	r.gramschmidt(arr, res, r);
 
 	for(int i = 0; i < 3; i++)
 		r.print(res[i]);
 
-	draw_3d_vector(res, offset);
+	draw_3d_vector(res);
 }
 
 void display(void)
 {
 	//define vector set
-	vec3 vec_set[3] = {{0.0, 40.0, 0.0},{20.0, 20.0, 10.0}, {10.0, 10.0, 10.0}}; 
+	vec3 vec_set[3] = {{0.0, 4.0, 0.0},{2.0, 2.0, 1.0}, {1.0, 1.0, 1.0}}; 
 	//define line color set
 	//Lcolor color[3]={};
 	vec3 offset = {3.0, 3.0, 3.0};
@@ -100,7 +102,20 @@ void display(void)
 #if 0
 	gluLookAt(3.0, 3.0, 3.0, 0, 0, 0, 0, 0, 1);
 #endif
+#if 0
+	//x-axis 기준 카메라
+	gluLookAt(10.0, 0.0, 0.0, 0, 0, 0, 0, 0, 1);
+#endif
+#if 0
+	//y-axis 기준 카메라
+	gluLookAt(0.0, 10.0, 0.0, 0, 0, 0, 0, 0, 1);
+#endif
+#if 0
+	//z-axis 기준 카메라
+	gluLookAt(0.0, 0.0, 10.0, 0, 0, 0, 0, 1, 0);
+#endif
 #if 1
+	//z-axis 60deg
 	gluLookAt(-1.098, 4.098, 3, 0, 0, 0, 0, 0, 1);
 #endif
 #if 0
@@ -108,10 +123,7 @@ void display(void)
 	gluLookAt(-1.098, 4.647, -2.048, 0, 0, 0, 0, 0, 1);
 #endif
 
-	//begin, end 작업시 
-	//그래픽의 최소단위는 삼각형(프렉탈)제어시 꼬이는 상황을 방지하기 위해 사용한다
     glPushMatrix();
-
 #if 0
 	// 평행 이동 z축으로 -4.5만큼
     glTranslatef(0.0, 0.0, -4.5);
@@ -135,6 +147,9 @@ void display(void)
     glVertex3f(0.0, 0.0, 100.0);
     glVertex3f(0.0, 0.0, 0.0);
     glEnd();
+
+	//draw vector set
+	//draw_3d_vector(vec_set);
 
 	//draw GramSchmidt result
 	draw_gramschmidt(vec_set, offset);
