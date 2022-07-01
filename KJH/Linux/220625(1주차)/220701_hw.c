@@ -25,7 +25,7 @@ int main(void)
     char change_word_buf[BUDDY_PAGE_SIZE] = "";
     char new_buf[BUDDY_PAGE_SIZE] = "";
 
-	fd = open("220701_hw.txt", O_RDWR | O_CREAT /*| O_TRUNC*/, 0644);
+	fd = open("220701_hw.txt", O_RDWR | O_CREAT | O_TRUNC, 0644);
 
 	if (fd == ERROR)
 	{
@@ -111,21 +111,21 @@ int main(void)
         buf_offset_cursor++;
     }
 
-    for(int i = 0 ; i < find_string_loaction_cursor ; i++)
-    {
-        printf("%d 번째 위치 %d\n", i+1, find_string_loaction_buf[i]);
-    }
+    // for(int i = 0 ; i < find_string_loaction_cursor ; i++)
+    // {
+    //     printf("%d 번째 위치 %d\n", i+1, find_string_loaction_buf[i]);
+    // }
 
-    change_offset = change_word_len - search_word_len;
+    //change_offset = change_word_len - search_word_len;
     
-    strcpy(new_buf, origin_buf);
+    //strcpy(new_buf, origin_buf);
 
-    for(int i = 0 ; i < find_string_loaction_cursor ; i++)
-    {
+    //for(int i = 0 ; i < find_string_loaction_cursor ; i++)
+    //{
         // strcpy(new_buf + find_string_loaction_buf[i], search_word_buf);
         // strcpy(new_buf + find_string_loaction_buf[i] + change_word_len, origin_buf + find_string_loaction_buf[i] + search_word_len);
         // printf("%s\n", new_buf);
-    }
+    //}
 
     //strcpy(new_buf + find_string_loaction_buf[0] + change_word_len, origin_buf + find_string_loaction_buf[0] + search_word_len);
     //strcpy(new_buf + find_string_loaction_buf[0], search_word_buf);
@@ -136,6 +136,7 @@ int main(void)
     
     //printf("%s", new_buf);
 
+    lseek(fd, (off_t)0, SEEK_SET);
     nwrite = write(fd, new_buf, buf_len);
 
 	if (nwrite != buf_len)
@@ -147,6 +148,11 @@ int main(void)
 	close(fd);
 
     printf("숙제끝!");
+
+    // for(int i = 0 ; i<200 ; i++)
+    // {
+    //     printf("%c %c\n", origin_buf[i], new_buf[i]);
+    // }
 
 	return 0;
 }
