@@ -236,8 +236,6 @@ void _c_int00(void)
 /* USER CODE END */
 
     _mpuInit_();
-
-    _cacheEnable_();
 	
 /* USER CODE BEGIN (23) */
 /* USER CODE END */

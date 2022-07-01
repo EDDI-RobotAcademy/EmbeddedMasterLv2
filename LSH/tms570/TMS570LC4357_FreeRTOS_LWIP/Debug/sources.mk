@@ -111,10 +111,5 @@ PDE_DEPS__QUOTED :=
 
 # Every subdirectory with source files must be described here
 SUBDIRS := \
-example/hdk/src \
-lwip-1.4.1/apps/httpserver_raw \
-lwip-1.4.1/ports/hdk \
-lwip-1.4.1/src/core \
-lwip-1.4.1/src/netif \
 source \
 
