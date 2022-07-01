@@ -98,10 +98,10 @@
 #define configUSE_TRACE_FACILITY	  0
 #define configUSE_16_BIT_TICKS		  0
 #define configCPU_CLOCK_HZ			  ( ( unsigned portLONG ) 75000000 ) /* Timer clock. */
-#define configTICK_RATE_HZ			  ( ( TickType_t ) 1000) /*1000, QJ changed to 1*/
+#define configTICK_RATE_HZ			  ( ( TickType_t ) 1000 )
 #define configMAX_PRIORITIES		  ( 9 )
 #define configMINIMAL_STACK_SIZE	  ( ( unsigned portSHORT ) 128 )
-#define configTOTAL_HEAP_SIZE		  ( ( size_t ) 1024*16 )  /*8192, changed by QJ*/
+#define configTOTAL_HEAP_SIZE		  ( ( size_t ) 8192 )
 #define configMAX_TASK_NAME_LEN		  ( 16 )
 #define configIDLE_SHOULD_YIELD		  1
 #define configGENERATE_RUN_TIME_STATS 0
