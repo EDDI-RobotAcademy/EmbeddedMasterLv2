@@ -20,6 +20,7 @@ int read_from_file(void)
 {
     FILE *fp;
     char buf[1024];
+    char write_buf[1024];
     char tmp_buf[1024];
     char *tok;
     int argc = 0;
@@ -64,6 +65,10 @@ int read_from_file(void)
     printf("%s\n", argv[1]);
     printf("%s\n", argv[2]);
 
+    sprintf(write_buf, "%s %s %s", argv[0], argv[1], argv[2]);
+
+    fseek(fp,0,SEEK_SET);
+    fputs(write_buf, fp);
 
     // printf("argv[%d] = %s",argc, argv[argc]);
     // fseek(fp,0,SEEK_SET);
