@@ -19,21 +19,24 @@ Queue_t* Queue_create(void)
    return p_head;
 }
 
-bool Queue_empty(Queue_t i_p_head)
+bool Queue_empty(Queue_t* i_p_head)
 {
-   if(i_p_head = NULL) 
+   if(i_p_head == NULL) 
    {
-
+        return true;
    }
+   return false;
 }
 
 void Queue_closeAll(Queue_t* i_p_head)
 {
-    int n_iterator;
+   Queue_t p_tmp_head;
+
+    p_tmp_head.link = i_p_head->link;
 
     while(i_p_head != NULL) {
+        i_p_head = p_tmp_head.link;
         free(i_p_head);
-        i_p_head = i_p_head->link;
     }
 }
 
@@ -87,9 +90,12 @@ int main(int argc, char* argv[])
 
     Queue_printfAll(p_head);
 
-    data = Queue_get(&p_head);
-    printf("Dequeue Data = %d\r\n", data);
-
+    for(n_iterator = 0; n_iterator < 5; n_iterator++) {
+        if(Queue_empty(p_head) == false) {
+            data = Queue_get(&p_head);
+            printf("Dequeue Data = %d\r\n", data);
+        }
+    }
     Queue_printfAll(p_head);
 
     Queue_closeAll(p_head);
