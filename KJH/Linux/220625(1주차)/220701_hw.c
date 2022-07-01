@@ -79,9 +79,13 @@ int main(void)
     change_offset = buf_len2 - buf_len1;
     
     strcpy(new_buf, buf);
-    strcpy(new_buf + find_string_loaction_buf[0], input_buf);
-    strcpy(new_buf + find_string_loaction_buf[0] + buf_len2, buf + find_string_loaction_buf[0] + buf_len1);
-    printf("%s\n", new_buf);
+
+    for(int i = 0 ; i < find_string_loaction_cursor ; i++)
+    {
+        strcpy(new_buf + find_string_loaction_buf[i], input_buf);
+        strcpy(new_buf + find_string_loaction_buf[i] + buf_len2, buf + find_string_loaction_buf[i] + buf_len1);
+        printf("%s\n", new_buf);
+    }
     //strcpy(new_buf + find_string_loaction_buf[0] + buf_len2, buf + find_string_loaction_buf[0] + buf_len1);
     //strcpy(new_buf + find_string_loaction_buf[0], input_buf);
     // 0보다 큰경우
