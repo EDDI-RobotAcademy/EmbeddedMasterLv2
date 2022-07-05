@@ -1,0 +1,138 @@
+1  sudo apt-get update
+    2  sudo apt-get install vim
+    3  sudo apt-get install git
+    4  pwd
+    5  mkdir proj
+    6  ls
+    7  cd prog
+    8  cd proj
+    9  git clone https://github.com/EDDI-RobotAcademy/EmbeddedMasterLv2.git
+   10  cd EmbeddedMasterLv2/
+   11  cd KJH/
+   12  ls
+   13  touch prepare.txt
+   14  ls
+   15  ls -a
+   16  lf
+   17  ll
+   18  git status
+   19  git add ./
+   20  git push origin main
+   21  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
+   22  git push origin main
+   23  git push origin
+   24  git push origin main
+   25  git push origin
+   26  https://github.com/BrownButton/EmbeddedMasterLv2.git
+   27  git status
+   28  git add ./
+   29  cd ..
+   30  rm -rf 
+   31  cd ..
+   32  ls
+   33  cd proj/
+   34  ll
+   35  ls
+   36  rm -rf EmbeddedMasterLv2/
+   37  ls
+   38  git clone https://github.com/BrownButton/EmbeddedMasterLv2.git
+   39  cd EmbeddedMasterLv2/
+   40  ls
+   41  cd KJH
+   42  LS
+   43  ls
+   44  git ad ./
+   45  git add ./
+   46  git push origin main
+   47  vim key.txt
+   48  ls
+   49  cd proj/
+   50  ls
+   51  cd EmbeddedMasterLv2/
+   52  ls
+   53  cd KJH
+   54  LS
+   55  ls
+   56  vim late.c
+   57  vi late.c
+   58  gcc -g -O0 late.c 
+   59  ls
+   60  fcitx-hangul
+   61  sudo apt-get update
+   62  sudo apt-get install fcitx-hangul
+   63  apt gcc
+   64  sudo apt-get gcc
+   65  sudo apt-get install gcc
+   66  gcc -g -O0 function_asm.c
+   67  ls
+   68  cd proj/
+   69  ls
+   70  cd EmbeddedMasterLv2/
+   71  cd KJH
+   72  gdb a.out
+   73  ls
+   74  list
+   75  :
+   76  :!
+   77  !
+   78  lsit
+   79  gdb a.out
+   80  ls
+   81  cd proj/
+   82  ll
+   83  cd EmbeddedMasterLv2/
+   84  ll
+   85  cd KJH/
+   86  ll
+   87  vi late.c 
+   88  gbc late.c 
+   89  gdb late.c
+   90  history
+   91  gdb a.out
+   92  history
+   93  gcc -g -O2 late.c
+   94  gdb a.out
+   95  ..
+   96  cd ..
+   97  ll
+   98  cd ~
+   99  cd /
+  100  ll
+  101  cd usr
+  102  ll
+  103  cd ..
+  104  ll
+  105  su - 
+  106  su -
+  107  su root -p root
+  108  su passwd
+  109  su root passwd
+  110  su - root
+  111  cd root/
+  112  ll
+  113  sudo cd root/
+  114  sudo passwd root
+  115  su -
+  116  cd proj/
+  117  cd EmbeddedMasterLv2/
+  118  cd KJH
+  119  CD
+  120  ls
+  121  git push
+  122  git merge
+  123  git push origin
+  124  cd ..
+  125  ls
+  126  git status
+  127  git add KJH/
+  128  git status
+  129  git commit
+  130  git config --global user.email "BrownButton@github.com
+"
+  131  git config --global user.email "BrownButton@github.com"
+  132  git config --global user.name "BrownButton"
+  133  git status
+  134  git commit -m "211003 save"
+  135  git push
+  136  history
+
