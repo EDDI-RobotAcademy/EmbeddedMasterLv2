@@ -15,36 +15,33 @@ char dst_buf[SLAB_SIZE] = { 0 };
 int src_len;
 int cmp_len;
 int dst_len;
+int diff_len;
 
 int fd_src;
 int fd_dst;
 
 off_t next_read_fpos = 0; 
-/*
- * 사용법
- * argv[1] = 저장 파일
- * argv[2] = 바뀔 단어   
- * argv[3] = 바꿀 단어 
- */
+off_t curr_read_fpos = 0; 
 
 /*
-### To Do ###
-1. 
-*/
+ * argv[1] = 바뀔 단어
+ * argv[2] = 바꿀 단어   
+ */
 
 int main(int argc, char **argv)
 {
     int write_bytes, read_bytes, read_remain_bytes;
-    int i, idx;
+    volatile int i, idx=0;
 
     src_len = strlen(src_buf);
 
-    if( argc < 4) {
+    if( argc < 3) {
        printf("argument input error!\n"); 
        return -1;
     }
 
-    if( (fd_src = open(argv[1], O_RDWR | O_TRUNC | O_CREAT, 0644)) == ERROR ) {
+    if( (fd_src = open("src_file.txt", O_RDWR | O_TRUNC | O_CREAT, 0644)) == ERROR ) {
+        perror("open error!\n");
         exit(1);
     }
 
@@ -58,6 +55,9 @@ int main(int argc, char **argv)
         exit(1);
     }
 
+    // printf("write_bytes : %d\n", write_bytes);
+    lseek(fd_src, (off_t) 0, SEEK_SET);
+
     if( (read_bytes = read(fd_src, src_buf, write_bytes)) == ERROR ) {
         perror("read error!\n");
         close(fd_src);
@@ -68,32 +68,42 @@ int main(int argc, char **argv)
         exit(1);
     }
 
+    // printf("read_bytes : %d\n", read_bytes);
     printf("src_buf : %s\n", src_buf);
-
     lseek(fd_src, (off_t) 0, SEEK_SET);
 
-    cmp_len = strlen(argv[2]);
-    dst_len = strlen(argv[3]);
+    cmp_len = strlen(argv[1]);
+    dst_len = strlen(argv[2]);
 
-    for(i = 0; i < 10; i++)
+    diff_len = dst_len - cmp_len;
+
+    for(i = 0; i < (src_len - cmp_len - (idx*cmp_len) + 1); i++)
     {
+        // printf("cnt : %d\n", (src_len - cmp_len - (idx*cmp_len) + 1));
         lseek(fd_src, (off_t)next_read_fpos, SEEK_SET);
 
-        // if( (read_bytes = read(fd_src, cmp_buf, cmp_len)) == ERROR ) {
-        //     perror("read error!\n");
-        //     close(fd_src);
-        //     exit(1);
-        // }
+        if( (read_bytes = read(fd_src, cmp_buf, cmp_len)) == ERROR ) {
+            perror("read error!\n");
+            close(fd_src);
+            exit(1);
+        }
 
-        if( !(strncmp(&src_buf[i], argv[2], src_len)) ) {
+        if( !(strncmp(cmp_buf, argv[1], cmp_len)) ) {
+            // printf("dst_read_fpos_1 : %ld\n", next_read_fpos + ((idx) * diff_len));
+            strncpy(&dst_buf[next_read_fpos + (idx * diff_len)], argv[2], dst_len);
 
-            next_read_fpos = lseek(fd_src, 0, SEEK_CUR);
+            curr_read_fpos = lseek(fd_src, 0, SEEK_CUR);
 
-            strncpy(dst_buf, argv[3], dst_len);
-            printf("dst_len = %d\n", dst_len);
+            // printf("dst_read_fpos_2 : %ld\n", next_read_fpos + (idx * diff_len) + dst_len);
+            read_remain_bytes = read(fd_src, &dst_buf[next_read_fpos + (idx * diff_len) + dst_len], SLAB_SIZE);
 
-            read_remain_bytes = read(fd_src, &dst_buf[dst_len], SLAB_SIZE);
+            next_read_fpos = curr_read_fpos;
+
+            printf("-------------------------------------------------------------\n");
             printf("dst_buf : %s\n", dst_buf);
+            printf("-------------------------------------------------------------\n");
+
+            idx++;
         }
         else {
             next_read_fpos = lseek(fd_src, 0, SEEK_CUR) - cmp_len + 1;
@@ -102,36 +112,26 @@ int main(int argc, char **argv)
         printf("next_read_fpos : %ld\n", next_read_fpos);
     }
 
-#if 0
+    close(fd_src);
 
-    lseek(fd_src, 0, SEEK_SET);
-
-    for( i = 0 ; i < src_len; i++ ) {
-        lseek(fd_src, next_read_fpos, SEEK_SET);
-
-        if( (read_bytes = read(fd_src, cmp_buf, cmp_len)) == ERROR ) {
-            perror("read error!\n");
-            close(fd_src);
-            exit(1);
-        } 
-
-        if( !(strncmp(cmp_buf, argv[3], cmp_len)) ) {
-            strncpy(dst_buf, argv[4], strlen(argv[4]));
-            // printf("dst_buf : %s\n", dst_buf);
-
-            next_read_fpos = lseek(fd_src, 0, SEEK_CUR);
-
-            read_remain_bytes = read(fd_src, tmp_buf, SLAB_SIZE);
-            strncat(dst_buf, tmp_buf, read_remain_bytes);
-            printf("merged_dst_buf : %s\n", dst_buf);
-
-            i = i + cmp_len - 1;
-        }
-        else {
-            next_read_fpos += 1;
-        }
-
+    if( (fd_dst = open("dst_file.txt", O_RDWR | O_TRUNC | O_CREAT, 0644)) == ERROR ) {
+        perror("open error!\n");
+        exit(1);
     }
-#endif
+
+    dst_len = strlen(dst_buf);
+
+    if ( (write_bytes = write(fd_dst, dst_buf, dst_len)) == ERROR ) {
+        perror("write error!\n");
+        close(fd_dst);
+        exit(1);
+    } else if( write_bytes != dst_len ) {
+        printf("didn't write all\n");
+        close(fd_dst);
+        exit(1);
+    }
+
+    close (fd_dst);
+
     return 0;
 }
