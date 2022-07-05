@@ -3,14 +3,16 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <math.h>
 
 #define ERROR               -1
 #define SLAB_SIZE		    64
 #define BUDDY_PAGE_SIZE		4096
 
-char src_buf[SLAB_SIZE] = "apple test apple test apple test";
+char src_buf[SLAB_SIZE] = "apple test apple test apple test apple test";
 char cmp_buf[SLAB_SIZE] = { 0 };
 char dst_buf[SLAB_SIZE] = { 0 };
+char tmp_buf[SLAB_SIZE] = { 0 };
 
 int src_len;
 int cmp_len;
@@ -35,7 +37,7 @@ int main(int argc, char **argv)
 
     src_len = strlen(src_buf);
 
-    if( argc < 3) {
+    if( argc != 3) {
        printf("argument input error!\n"); 
        return -1;
     }
@@ -95,7 +97,9 @@ int main(int argc, char **argv)
             curr_read_fpos = lseek(fd_src, 0, SEEK_CUR);
 
             // printf("dst_read_fpos_2 : %ld\n", next_read_fpos + (idx * diff_len) + dst_len);
-            read_remain_bytes = read(fd_src, &dst_buf[next_read_fpos + (idx * diff_len) + dst_len], SLAB_SIZE);
+            read_remain_bytes = read(fd_src, tmp_buf, SLAB_SIZE);
+            memcpy(&dst_buf[next_read_fpos + (idx * diff_len) + dst_len], tmp_buf, src_len - abs(diff_len));
+            memset(tmp_buf, 0, src_len - abs(diff_len));
 
             next_read_fpos = curr_read_fpos;
 
@@ -104,6 +108,7 @@ int main(int argc, char **argv)
             printf("-------------------------------------------------------------\n");
 
             idx++;
+
         }
         else {
             next_read_fpos = lseek(fd_src, 0, SEEK_CUR) - cmp_len + 1;
