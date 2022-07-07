@@ -1,12 +1,4 @@
 #if 0
-### 사용법 ###
-
-./a.out "apple" "watermelon" 
-./a.out "apple" "go" 
-
- argv[1] = 바뀔 단어 
- argv[2] = 바꿀 단어 
-
 ### TODO ### 
 #1. 두 개의 파일 test1.txt test2.txt로 부터 데이터를 읽는다.
 #2. 1개의 버퍼를 만들어 내용을 다 때려 넣는다.
