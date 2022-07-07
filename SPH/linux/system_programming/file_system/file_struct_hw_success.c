@@ -1,9 +1,12 @@
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <stdbool.h>
+
 #include <string.h>
+
+#include <unistd.h>
+#include <fcntl.h>
+
 #include <time.h>
 
 #define BUDDY_PAGE_SIZE 4096
@@ -24,8 +27,8 @@ typedef struct _file_queue file_queue;
 struct _file_queue{
 	int freq;
 	int data;
-	file_queue *next;
-	file_queue *prev;
+	file_queue *front;
+	file_queue *rear;
 };
 
 /*
@@ -112,45 +115,100 @@ int my_atoi(char *str_buf)
 	return (sign) ? num : -num;
 }
 
-int *set_fd_size(int f_num)
-{
-	int *tmp;
-	tmp = (int *)malloc(sizeof(int) * f_num);
-	return tmp;
-}
-
 /*
    TODO
    1. 랜덤 숫자를 문자열로 변경한다
    2. 변경된 문자열을 전달 받은 파일디스크립터를 통해 파일에 쓴다
    3. 문자열을 세로로 정렬한다
 */
-void write_rand_data(char **f_ptr, int f_num)
+void write_rand_data(int fd)
 {
 	int i, j= 0;
 	char str[SLAB_SIZE];
 	char lf = '\n';
 	int len;
-	int *fd;
 
-	fd = set_fd_size(f_num);
-
-	for(i = 0; i < f_num; i++)
+	for(j = 0; j < ARRAY_MAX; j++)
 	{
-		fd[i] = open(f_ptr[i], O_WRONLY|O_CREAT, 0644);
-
-		if(fd[i] <= 0)
-			exit(1);
-
-		for(j = 0; j < ARRAY_MAX; j++)
-		{
-			len = my_itoa((int)rand() % DATA_MAX, str);
-			write(fd[i], str, len);
-			write(fd[i], &lf, LF_SIZE);
-		}
-		close(fd[i]);
+		len = my_itoa((int)rand() % DATA_MAX, str);
+		write(fd, str, len);
+		write(fd, &lf, LF_SIZE);
 	}
-	free(fd);
+}
+
+bool check_data_redundancy(int data, file_queue **head)
+{
+	file_queue *loop = *head;
+	bool result = false;
+
+	if(!(*head)->front && (*head)->data == data)
+	{
+		(*head)->freq++;
+		result = true;
+		return result;
+	}
+
+	while(loop->front)
+	{
+		if(loop->data == data)
+		{
+			loop->freq++;
+			result = true;
+			break;
+		}
+		loop = loop->front;
+	}
+
+	return result;
+}
+
+file_queue *create_queue(void)
+{
+	file_queue *tmp;
+
+	tmp = (file_queue *)malloc(sizeof(file_queue));
+	tmp->front = NULL;
+	tmp->rear = NULL;
+	tmp->freq = 0;
+
+	return tmp;
+}
+/*
+   TODO
+   1. head가 null 이면 queue를 생성
+   2. 중복된 데이터가 들어오면 해당 데이터가 queue에 있는지 확인한다
+   3. front 값을 기준으로 check한다
+*/
+void enqueue(int data, file_queue **head)
+{
+	file_queue *front = NULL, *rear = NULL;
+
+	if(!(*head))
+	{
+		*head = create_queue();
+		(*head)->data = data;
+		(*head)->freq = 0;
+	}
+	else
+	{
+		file_queue *new;
+		file_queue *loop = *head;
+		file_queue *front = NULL, *rear = NULL;
+
+		while(loop->rear)
+		{
+			front = loop;
+			loop = loop->rear;
+		}
+
+		if(check_data_redundancy(data, &loop))
+			return;
+
+		new = create_queue();
+		new->data = data;
+		new->front = front;
+		loop->rear = new;
+	}
 }
 
 /*
@@ -159,67 +217,85 @@ void write_rand_data(char **f_ptr, int f_num)
    2. open 통해 전달받은 fd를 통해 파일의 내용을 읽는다
    3. 개행문자로 구분된 파일의 데이터 읽기
 */
-void f_enqueue(char **f_name, int f_num, file_queue **head)
+void read_queue_handler(int fd, file_queue **head)
 {
-	int *fd;
-	int i, j;
-	int num, f_tot_size;
+	int i, num, f_tot_size;
 	int cur_pos = 0, cur_size = 0;
-
 	char buf[BUDDY_PAGE_SIZE];
 	char *str_buf;
 
-	fd = set_fd_size(f_num);
+	f_tot_size = lseek(fd, (off_t)0, SEEK_END);
+	lseek(fd, (off_t)0, SEEK_SET);
 
-	for(i = 0; i < f_num; i++)
+	for(i = 0; i < f_tot_size; i++)
 	{
+		read(fd, &buf[i], STR_ONEBYTE);
+		cur_size++;
 
-		fd[i] = open(f_name[i], O_RDONLY, 0644);
-
-		if(fd[i] == 0)
+		if(buf[i] == '\n')
 		{
-			printf("file open fail\n");
-			exit(1);
+			lseek(fd, (off_t)cur_pos, SEEK_SET);
+			str_buf = (char *)malloc(sizeof(char) * (cur_size));
+			read(fd, str_buf, cur_size);
+			num = my_atoi(str_buf);
+			enqueue(num, head);
+			cur_pos = lseek(fd, (off_t)0, SEEK_CUR);
+			cur_size = 0;
+			free(str_buf);
 		}
-
-		f_tot_size = lseek(fd[i], (off_t)0, SEEK_END);
-		lseek(fd[i], (off_t)0, SEEK_SET);
-
-		for(j = 0; j < f_tot_size; j++)
-		{
-			read(fd[i], &buf[j], STR_ONEBYTE);
-			cur_size++;
-			if(buf[j] == '\n')
-			{
-				lseek(fd[i], (off_t)cur_pos, SEEK_SET);
-				str_buf = (char *)malloc(sizeof(char) * (cur_size));
-				read(fd[i], str_buf, cur_size);
-				num = my_atoi(str_buf);
-				printf("str_buf = %snum = %d\n", str_buf, num);
-				cur_pos = lseek(fd[i], (off_t)0, SEEK_CUR);
-				cur_size = 0;
-				free(str_buf);
-			}
-		}
-		cur_pos = 0;
-		close(fd[i]);
 	}
-	free(fd);
 }
 
+void print_queue(file_queue *head)
+{
+	int i = 0, sum_freq = 0;
+	while(head)
+	{
+		printf("queue data = %d, queue data freq = %d\n", head->data, head->freq);
+		sum_freq += head->freq;
+		head = head->rear;
+		i++;
+	}
+	printf("total data number = %d\n", i);
+	printf("sum freq  = %d\n", sum_freq);
+	if(((DATA_MAX*2) - sum_freq) == i)
+	{
+		printf("DATA MAX * 2 - sum_freq = %d\n", DATA_MAX*2 - sum_freq);
+		printf("test pass!\n");
+	}
+	printf("queue is empty\n");
+}
+
+int *set_fd_size(int f_num)
+{
+	int *tmp;
+	tmp = (int *)malloc(sizeof(int) * f_num);
+	return tmp;
+}
 /*
 	1. 파일을 create, rdwr모드로 연다
 	2. 파일에 랜덤 숫자를 쓴다
 	3. 파일에서 숫자를 읽는다
 	3. 파일 큐에 enqueue한다
 */
-int main(void)
+int main(int argc, char **argv)
 {
-	file_queue *f_queue = NULL;
-	char *f_name[2] = {"test1.txt", "test2.txt"};
+	file_queue *head = NULL;
+	int *fd = set_fd_size(argc-1);
 
-	write_rand_data(f_name, 2);
-	f_enqueue(f_name, 2, NULL);
+	for(int i = 0; i < argc-1; i++)
+	{
+		fd[i] = open(argv[i+1], O_WRONLY|O_CREAT, 0644);
+		write_rand_data(fd[i]);
+		close(fd[i]);
+
+		fd[i] = open(argv[i+1], O_RDONLY, 0644);
+		read_queue_handler(fd[i], &head);
+		close(fd[i]);
+	}
+	free(fd);
+
+	print_queue(head);
 
 	return 0;
 }
