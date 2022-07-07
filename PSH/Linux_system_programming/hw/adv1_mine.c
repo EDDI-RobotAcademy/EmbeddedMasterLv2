@@ -49,7 +49,6 @@ off_t curr_read_fpos = 0;
      ^    ^
      |    |
      0    5(커서)
-###################################################
 #endif
 
 int main(int argc, char **argv)
