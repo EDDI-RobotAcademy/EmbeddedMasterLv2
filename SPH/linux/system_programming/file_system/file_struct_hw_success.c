@@ -18,14 +18,15 @@
 #define ASCII_ZERO 48
 #define RADIX_DEC 10
 
+#define DOUBLY_LINKED_LIST 0
+
 #define abs(x) (x < 0) ? -x : x
 
 typedef struct _file_queue file_queue;
 struct _file_queue{
 	int freq;
 	int data;
-	file_queue *front;
-	file_queue *rear;
+	file_queue *list;
 };
 
 /*
@@ -133,51 +134,12 @@ void write_rand_data(int fd, int test_case)
 	}
 }
 
-/*
-   TODO
-   1. 전달 받은 head에 front 연결리스트가 있는지 파악한다
-   2. front 연결리스트가 없으면 head하나만 있는 상태로 데이터 중복 체크를 한 후 중복이면 flag = true로 반환
-      해당 queue의 freq 값을 1증가 시킨다
-   3. front 연결리스트가 있으면 front 연결리스트로 옮기면서 중복 체크를 한다
-   4. front 연결리스트의 data와 전달 받은 data가 같으면 front 연결리스트의 freq 값을 1증가
-      중복 flag = true 루프를 종료한다 
-*/
-bool check_data_redundancy(int data, file_queue **head)
-{
-	file_queue *loop = *head;
-	bool result = false;
-
-	//1. & 2.
-	if(!(*head)->front && (*head)->data == data)
-	{
-		(*head)->freq++;
-		result = true;
-		return result;
-	}
-
-	//3.
-	while(loop->front)
-	{
-		//4.
-		if(loop->data == data)
-		{
-			loop->freq++;
-			result = true;
-			break;
-		}
-		loop = loop->front;
-	}
-
-	return result;
-}
-
 file_queue *create_queue(void)
 {
 	file_queue *tmp;
 
 	tmp = (file_queue *)malloc(sizeof(file_queue));
-	tmp->front = NULL;
-	tmp->rear = NULL;
+	tmp->list = NULL;
 	tmp->freq = 1;
 
 	return tmp;
@@ -204,24 +166,23 @@ void enqueue(int data, file_queue **head)
 	{
 		file_queue *new;
 		file_queue *loop = *head;
-		file_queue *front = NULL;
-
 		//2.
-		while(loop->rear)
+		while(loop->list)
 		{
 			//3.
-			if(check_data_redundancy(data, &loop))
+			if(loop->data == data)
+			{
+				loop->freq++;
 				return;
-
-			front = loop;
-			loop = loop->rear;
+			}
+			loop = loop->list;
 		}
 
 		//4.
 		new = create_queue();
 		new->data = data;
-		new->front = front;
-		loop->rear = new;
+		new->list = NULL;
+		loop->list = new;
 	}
 }
 
@@ -271,7 +232,7 @@ void print_queue(file_queue *head, int test_case)
 	{
 		printf("queue data = %d, queue data freq = %d\n", head->data, head->freq);
 		sum_freq += (head->freq != 1) ? (head->freq - 1) : 0;
-		head = head->rear;
+		head = head->list;
 		i++;
 	}
 	printf("total data number = %d\n", i);
