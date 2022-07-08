@@ -152,6 +152,7 @@ bool check_data_redundancy(int data, file_queue **head)
 	{
 		if(loop->data == data)
 		{
+			printf("loop->data = %d, data = %d\n", loop->data, data);
 			loop->freq++;
 			result = true;
 			break;
@@ -169,7 +170,7 @@ file_queue *create_queue(void)
 	tmp = (file_queue *)malloc(sizeof(file_queue));
 	tmp->front = NULL;
 	tmp->rear = NULL;
-	tmp->freq = 0;
+	tmp->freq = 1;
 
 	return tmp;
 }
@@ -197,13 +198,17 @@ void enqueue(int data, file_queue **head)
 
 		while(loop->rear)
 		{
+			if(check_data_redundancy(data, &loop))
+				return;
+
 			front = loop;
 			loop = loop->rear;
 		}
 
+#if 0
 		if(check_data_redundancy(data, &loop))
 			return;
-
+#endif
 		new = create_queue();
 		new->data = data;
 		new->front = front;
@@ -237,8 +242,10 @@ void read_queue_handler(int fd, file_queue **head)
 			lseek(fd, (off_t)cur_pos, SEEK_SET);
 			str_buf = (char *)malloc(sizeof(char) * (cur_size));
 			read(fd, str_buf, cur_size);
+
 			num = my_atoi(str_buf);
 			enqueue(num, head);
+
 			cur_pos = lseek(fd, (off_t)0, SEEK_CUR);
 			cur_size = 0;
 			free(str_buf);
@@ -248,21 +255,23 @@ void read_queue_handler(int fd, file_queue **head)
 
 void print_queue(file_queue *head)
 {
-	int i = 0, sum_freq = 0;
+	int i = 1, sum_freq = 0;
 	while(head)
 	{
 		printf("queue data = %d, queue data freq = %d\n", head->data, head->freq);
-		sum_freq += head->freq;
+		sum_freq += (head->freq != 1) ? (head->freq - 1) : 0;
 		head = head->rear;
 		i++;
 	}
 	printf("total data number = %d\n", i);
 	printf("sum freq  = %d\n", sum_freq);
+
 	if(((DATA_MAX*2) - sum_freq) == i)
 	{
 		printf("DATA MAX * 2 - sum_freq = %d\n", DATA_MAX*2 - sum_freq);
 		printf("test pass!\n");
 	}
+
 	printf("queue is empty\n");
 }
 
@@ -283,6 +292,15 @@ int main(int argc, char **argv)
 	file_queue *head = NULL;
 	int *fd = set_fd_size(argc-1);
 
+#if 0
+	if(argc != 4)
+	{
+		printf("명령줄 인수가 부족합니다\n");
+		printf("\"실행파일 테스트케이스 파일1 파일2\"로 다시 입력 하세요\n");
+		exit(1);
+	}
+#endif
+
 	for(int i = 0; i < argc-1; i++)
 	{
 		fd[i] = open(argv[i+1], O_WRONLY|O_CREAT, 0644);
@@ -296,6 +314,7 @@ int main(int argc, char **argv)
 	free(fd);
 
 	print_queue(head);
+	free(head);
 
 	return 0;
 }
