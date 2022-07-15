@@ -182,9 +182,10 @@ void run_code_coverage(char *path, code_type type)
 			printf("C코드 라인 : %d\n", line->c.c + line->c.h);
 			break;
 		case fpga:
-			recur_chk_code_coverage(path, ".v", &line->fpga.v);
+			recur_chk_code_coverage(path, tmp, ".v", &line->fpga.v);
+			//issue 3 : 오타 수정
 			recur_chk_code_coverage(path, tmp, ".vhdl", &line->fpga.vhdl);
-			printf("FPGA(VHDL)코드 라인 : %d\n", line->fpga.vhdl);
+			printf("FPGA(VHDL)코드 라인 : %d\n", line->fpga.v+line->fpga.vhdl);
 			break;
 		case _asm:
 			recur_chk_code_coverage(path, tmp, ".asm", &line->_asm);
@@ -208,6 +209,7 @@ void run_code_coverage(char *path, code_type type)
    TODO
    1. 탐색하고자 하는 디렉토리를 입력받는다
    *예외 처리 : 명령인수가 2보다 작으면 프로세스 종료
+   2. 재귀방식으로 
 */
 int main(int argc, char **argv)
 {
