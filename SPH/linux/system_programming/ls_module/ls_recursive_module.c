@@ -76,9 +76,12 @@ void cnt_file_line(char *f_name)
 		if(ch == '\n')
 			line_value.c++;
 	}
+
+	//issue 1 : 프로세스 멈춤 해결
+	//파일을 연상태에서 닫지 않고 계속 파일을 열어 버퍼 터짐(?)
+	close(fd);
 }
 
-#if 1
 void check_file_type(DIR *dp, char *f_ext)
 {
 	struct dirent *p;
@@ -100,7 +103,6 @@ void check_file_type(DIR *dp, char *f_ext)
 		}
 	}
 }
-#endif
 
 void recursive_dir_traversal(char *d_name, char *f_ext)
 {
@@ -120,10 +122,6 @@ void recursive_dir_traversal(char *d_name, char *f_ext)
 		return;
 	}
 
-	//printf("dir : %s\n", d_name);
-
-	//check_file_type(dp, f_ext);
-
 	while(p = readdir(dp))
 	{
 		if(p->d_name[0] == '.')
@@ -141,22 +139,7 @@ void recursive_dir_traversal(char *d_name, char *f_ext)
 
 
 	rewinddir(dp);
-#if 0
-	while(p = readdir(dp))
-	{
-		if(p->d_name[0] == '.')
-			continue;
-		stat(p->d_name, &st_buf);
 
-		if(S_ISDIR(st_buf.st_mode))
-		{
-			if(strcmp(p->d_name, ".") && strcmp(p->d_name, ".."))
-			{
-				recursive_dir_traversal(p->d_name, f_ext);
-			}
-		}
-	}
-#endif
 	check_file_type(dp, f_ext);
 
 	chdir("..");
@@ -169,7 +152,6 @@ void recursive_dir_traversal(char *d_name, char *f_ext)
 */
 int main(int argc, char **argv)
 {
-#if 1
 	if(argc < 3)
 	{
 		printf("사용법 : ./실행파일 디렉토리경로 확장자(예 : .c)\n");
@@ -177,8 +159,6 @@ int main(int argc, char **argv)
 	}
 
 	recursive_dir_traversal(argv[1], argv[2]);
-#endif
-	//recursive_dir_traversal(argv[1], ".c");
 
 	printf("%s line : %d\n", argv[2], (int)line_value.c);
 	return 0;
