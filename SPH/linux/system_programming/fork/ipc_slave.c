@@ -61,19 +61,6 @@ int main(void)
 		printf("fork() error\n");
 		exit(-1);
 	}
-#if 0
-	while(1)
-	{
-		ret = read(0, buf, sizeof(buf));
-		buf[ret] = 0;
-		printf("me : %s\n", buf);
-		write(fd_s, buf, ret);
-
-		ret = read(fd_m, buf, sizeof(buf));
-		buf[ret] = 0;
-		printf("opponent : %s\n", buf);
-	}
-#endif
 
 	close(fd_m);
 	close(fd_s);
