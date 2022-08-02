@@ -50,6 +50,11 @@
 #include "HL_sys_common.h"
 
 /* USER CODE BEGIN (1) */
+#include "HL_system.h"
+#include "HL_sci.h"
+
+#include <stdio.h>
+#include <string.h>
 /* USER CODE END */
 
 /** @fn void main(void)
@@ -61,11 +66,23 @@
 */
 
 /* USER CODE BEGIN (2) */
+#define UART        sciREG1
+
+void sci_display_text (sciBASE_t *sci, uint8 *text, uint32 length);
+void wait (uint32 time);
+
+unsigned int buf_len;
+char buf[128];
 /* USER CODE END */
 
 int main(void)
 {
 /* USER CODE BEGIN (3) */
+    sciInit();
+
+    sprintf(buf, "SCI Init Success!\n\r\0");
+    buf_len = strlen(buf);
+    sci_display_text(UART, (uint8 *)buf, buf_len);
 /* USER CODE END */
 
     return 0;
@@ -73,4 +90,22 @@ int main(void)
 
 
 /* USER CODE BEGIN (4) */
+void sci_display_text (sciBASE_t *sci, uint8 *text, uint32 length)
+{
+    while (length--)
+    {
+        while ((UART->FLR & 0x4) == 4)
+            ;
+
+        sciSendByte(UART, *text++);
+    }
+}
+
+void wait (uint32 time)
+{
+    int i;
+
+    for (i = 0; i < time; i++)
+        ;
+}
 /* USER CODE END */
