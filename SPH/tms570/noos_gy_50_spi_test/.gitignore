@@ -1,0 +1,14 @@
+#Debug folder
+/Debug/
+
+#lwip doc foler
+/doc/
+
+#.prefs file
+org.eclipse.cdt.debug.core.prefs
+
+#.txt file
+*.txt
+
+#.pdf file
+*.pdf
