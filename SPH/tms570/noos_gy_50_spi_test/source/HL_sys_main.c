@@ -52,6 +52,7 @@
 /* USER CODE BEGIN (1) */
 #include "HL_system.h"
 #include "HL_sci.h"
+#include "HL_rti.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -83,6 +84,16 @@ int main(void)
     sprintf(buf, "SCI Init Success!\n\r\0");
     buf_len = strlen(buf);
     sci_display_text(UART, (uint8 *)buf, buf_len);
+
+    rtiInit();
+    sprintf(buf, "RTI Init Success!\n\r\0");
+    buf_len = strlen(buf);
+    sci_display_text(UART, (uint8 *)buf, buf_len);
+
+    /*rti 관련 함수*/
+    rtiEnableNotification(rtiREG1, rtiNOTIFICATION_COMPARE0);
+    _enable_IRQ_interrupt_();
+    rtiStartCounter(rtiREG1, rtiCOUNTER_BLOCK0);
 /* USER CODE END */
 
     return 0;
@@ -90,6 +101,11 @@ int main(void)
 
 
 /* USER CODE BEGIN (4) */
+void rtiNotification(rtiBASE_t *rtiREG, uint32_t notification)
+{
+    ;
+}
+
 void sci_display_text (sciBASE_t *sci, uint8 *text, uint32 length)
 {
     while (length--)
